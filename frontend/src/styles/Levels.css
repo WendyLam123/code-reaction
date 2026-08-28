@@ -1,0 +1,127 @@
+#lessonPage{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+#levelsPageContainer{
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.levelTitles{
+    font-size: 35px;
+    font-weight: bold;
+    position: relative;
+    padding-left: 2%;
+}
+.levelReminder{
+    position: absolute;
+    padding: 1%;
+    font-size: 20px;
+    color: #5a2e0f;
+    background-color: #fff4e6;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px rgba(161, 94, 33, 0.5);
+}
+.levelReminder2{
+    left: 700px;
+    top: 15%;
+    width: 650px;
+}
+.levelReminder1{
+    left: 3%;
+    top: 20%;
+    width: 510px;
+}
+
+.levelReminderPointDown{
+    font-size: 50px;
+    position: absolute;    
+}
+.levelReminderPointDown1{
+    left: 160px;
+    top: 30%;
+}
+.levelReminderPointDown2{
+    left: 750px;
+    top: 27%;
+}
+.levelBox{
+    width: 99%;
+    height: 98%;
+    background-color: #fdb546ff;
+    position: absolute;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    scroll-snap-type: x mandatory;  /* Optional: add smooth snapping */
+    -webkit-overflow-scrolling: touch; /* Optional: for better scroll experience on mobile */
+
+}
+.levelContainer{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    height: 95%;
+    border-radius: 20px;
+    margin: 1%;
+    padding-right: 1%;
+    padding-left: 1%;
+}
+
+.level{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1%;
+}
+
+.levelMoveRight{
+    font-size: 100%;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    color: #a15e21;
+    position: relative;
+}
+.levelGoToRightArrow{
+    font-size: 200px;
+}
+
+.levelButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 400px;
+    background-color: transparent;
+    border: none;
+    overflow: hidden;
+}
+
+.levelImages img{
+    width: 100%;
+    height: 80%;
+}
+.levelImages{
+    padding-right:30px;
+    padding-left:30px;
+    padding-top: 30%;
+}
+
+.levelArrow{
+    align-self: flex-end;
+    margin-top: auto;
+}
+.stageName{
+    font-size: 15px;
+    text-align: center;
+    width: 100%;
+    text-decoration: none;
+    color: #5a2e0f;
+    font-weight: bold;
+}

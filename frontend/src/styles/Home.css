@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+body{
+    background-color: #dbb691ff;
+    font-family: "Economica", sans-serif;
+    height:100%;
+    color:#a15e21;
+}
+
+.homePage{
+    background-image: url("https://i.postimg.cc/G2XdCmNJ/Sample.png");
+    background-size: cover;
+    background-position:center;
+    background-repeat: no-repeat;
+    height:100vh;
+    margin:0;
+}
+#title{
+    font-size:70px;
+    background-color: bisque;
+    padding-right:10px;
+    padding-left:10px; 
+    margin-top: 100px;
+}
+.container{
+    display: grid;
+    place-items: center;
+    grid-template-rows: repeat(2,auto);
+    gap: 100px;
+}
+.header{
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+.alien-beige, .alien-yellow{
+    width: 100px;
+    height:100px;
+    margin-top:80px;
+}
+.gameButton{
+    padding:10px;
+    background-color:bisque;
+    color:#a15e21;
+    border-radius: 5px;
+    font-size:38px;
+    border: none;
+    font-family: "Economica", sans-serif !important;
+    font-weight: 700;
+    text-align: center;
+    width: 300px;
+}

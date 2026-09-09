@@ -14,6 +14,7 @@
     font-weight: bold;
     position: relative;
     padding-left: 2%;
+    font-family: 'Monaco', monospace;
 }
 .levelReminder{
     position: absolute;
@@ -49,8 +50,8 @@
     top: 27%;
 }
 .levelBox{
-    width: 99%;
-    height: 98%;
+    width: 100%;
+    height: 100%;
     background-color: #fdb546ff;
     position: absolute;
     overflow-x: auto;
@@ -63,65 +64,75 @@
 .levelContainer{
     display: flex;
     flex-direction: column;
+    gap: 1;
     background-color: white;
     height: 95%;
     border-radius: 20px;
     margin: 1%;
     padding-right: 1%;
     padding-left: 1%;
+    flex: 1 0 550px;
 }
 
 .level{
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    flex: 1 1 0%;
     align-items: center;
+    justify-content: center;
     gap: 1%;
+    padding: 10px;
 }
 
 .levelMoveRight{
-    font-size: 100%;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    color: #a15e21;
-    position: relative;
-}
-.levelGoToRightArrow{
-    font-size: 200px;
-}
-
-.levelButtons {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: 400px;
-    background-color: transparent;
+    text-align: center;
+    font-size: 1.2em;
+    border: none;
+    color: #a15e21;    
+    font-family: 'Monaco', monospace;
+}
+.levelGoToRightArrow{
+    font-size: 7em;
+    padding: 15px;
+}
+
+.imageWrapper_Door {
+    display: flex;
+    flex-direction: column;
+    width: 35vh;
+    height: 45vh;
     border: none;
     overflow: hidden;
+    padding: 50px 10px;
+}
+.imageWrapper_Arrow{
+    display: flex;
+    flex-direction: column;
+    width: 35vh;
+    height: 10vh;
+    border: none;
+    overflow: hidden;
+    padding: 50px 10px;
 }
 
-.levelImages img{
-    width: 100%;
-    height: 80%;
+.levelDoor{
+    transform: scale(1.5) translate(20%, -44%);
+    cursor: pointer;
 }
-.levelImages{
-    padding-right:30px;
-    padding-left:30px;
-    padding-top: 30%;
-}
-
 .levelArrow{
-    align-self: flex-end;
-    margin-top: auto;
+    transform: scale(1.5) translate(3%, -69%);
+    cursor: pointer;
 }
+
 .stageName{
     font-size: 15px;
     text-align: center;
     width: 100%;
     text-decoration: none;
+    font-family: 'Monaco', monospace;
     color: #5a2e0f;
     font-weight: bold;
 }

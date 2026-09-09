@@ -2,6 +2,7 @@ import "../styles/Home.css";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 
+import Nav from "../components/Nav";
 
 import shipBeige_manned from "../assets/characters/shipBeige_manned.png";
 import shipYellow_manned from "../assets/characters/shipYellow_manned.png";
@@ -20,6 +21,7 @@ function Home() {
 
   return (
     <div className="homePage">
+      <Nav />
       <div className="container">
         <div className="header">
           <img

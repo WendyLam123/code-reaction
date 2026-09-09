@@ -1,11 +1,5 @@
 @import "tailwindcss";
 
-body{
-    background-color: #dbb691ff;
-    font-family: "Economica", sans-serif;
-    height:100%;
-    color:#a15e21;
-}
 
 .homePage{
     background-image: url("https://i.postimg.cc/G2XdCmNJ/Sample.png");
@@ -13,14 +7,21 @@ body{
     background-position:center;
     background-repeat: no-repeat;
     height:100vh;
+    width: 100vw;
     margin:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 #title{
     font-size:70px;
     background-color: bisque;
     padding-right:10px;
     padding-left:10px; 
     margin-top: 100px;
+    box-shadow: 10px 10px 8px 5px rgba(0,0,0,0.3);
+
 }
 .container{
     display: grid;
@@ -43,7 +44,8 @@ body{
 .alien-beige, .alien-yellow{
     width: 100px;
     height:100px;
-    margin-top:80px;
+    border-radius: 50%;
+    box-shadow: 0px 50px 8px 5px rgba(255, 255, 255, 0.583);
 }
 .gameButton{
     padding:10px;
@@ -56,4 +58,5 @@ body{
     font-weight: 700;
     text-align: center;
     width: 300px;
+    box-shadow: 10px 10px 8px 5px rgba(0,0,0,0.3);
 }

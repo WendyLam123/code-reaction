@@ -1,0 +1,136 @@
+#lessonPage{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+#levelsPageContainer{
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.levelTitles{
+    font-size: 35px;
+    font-weight: bold;
+    position: relative;
+    padding-left: 2%;
+    font-family: 'Monaco', monospace;
+}
+.levelReminder{
+    position: absolute;
+    padding: 1%;
+    font-size: 20px;
+    color: #5a2e0f;
+    background-color: #fff4e6;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0px 3px 10px rgba(161, 94, 33, 0.5);
+}
+.levelReminder2{
+    left: 700px;
+    top: 15%;
+    width: 650px;
+}
+.levelReminder1{
+    left: 3%;
+    top: 20%;
+    width: 510px;
+}
+
+.levelReminderPointDown{
+    font-size: 50px;
+    position: absolute;    
+}
+.levelReminderPointDown1{
+    left: 160px;
+    top: 30%;
+}
+.levelReminderPointDown2{
+    left: 750px;
+    top: 27%;
+}
+.levelBox{
+    width: 100%;
+    height: 100%;
+    background-color: #fdb546ff;
+    position: absolute;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    scroll-behavior: smooth;
+}
+.levelContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 1;
+    background-color: white;
+    height: 95%;
+    border-radius: 20px;
+    margin: 1%;
+    padding-right: 1%;
+    padding-left: 1%;
+    flex: 1 0 550px;
+}
+
+.level{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+    gap: 1%;
+    padding: 10px;
+}
+
+.levelMoveRight{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 1.2em;
+    border: none;
+    color: #a15e21;    
+    font-family: 'Monaco', monospace;
+}
+.levelGoToRightArrow{
+    font-size: 7em;
+    padding: 15px;
+}
+
+.imageWrapper_Door {
+    display: flex;
+    flex-direction: column;
+    width: 35vh;
+    height: 45vh;
+    border: none;
+    overflow: hidden;
+    padding: 50px 10px;
+}
+.imageWrapper_Arrow{
+    display: flex;
+    flex-direction: column;
+    width: 35vh;
+    height: 10vh;
+    border: none;
+    overflow: hidden;
+    padding: 50px 10px;
+}
+
+.levelDoor{
+    transform: scale(1.5) translate(20%, -44%);
+    cursor: pointer;
+}
+.levelArrow{
+    transform: scale(1.5) translate(3%, -69%);
+    cursor: pointer;
+}
+
+.stageName{
+    font-size: 15px;
+    text-align: center;
+    width: 100%;
+    text-decoration: none;
+    font-family: 'Monaco', monospace;
+    color: #5a2e0f;
+    font-weight: bold;
+}

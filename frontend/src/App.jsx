@@ -1,0 +1,20 @@
+import React, { useState, useEffect } from "react";
+
+function App() {
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    fetch("/api")
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+      });
+  }, []);
+
+  return (
+    <>
+    </>
+  );
+}
+
+export default App;

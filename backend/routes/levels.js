@@ -67,6 +67,47 @@ router.get('/:levelId', (req, res, next)=>{
     })
 });
 
+router.post('/:quiz_id/tryQuiz', verifyToken, (req, res, next)=>{
+    const quiz_id = req.params.quiz_id;
+    const sql = `
+        INSERT INTO quizStatistics (user_id, quiz_id, attempts)
+        VALUES(?, ?, 1)
+
+        ON DUPLICATE KEY UPDATE
+        attempts = attempts + 1;
+    `
+
+    db.query(sql, [req.userId, quiz_id], (err, data)=>{
+        if (err){
+            next(err);
+        }
+
+        console.log("updated");
+        return res.json(data);
+
+    })
+})
+
+router.post('/:quiz_id/completedQuiz', verifyToken, (req, res, next)=>{
+    const quiz_id = req.params.quiz_id;
+    const sql = `
+        INSERT INTO quizStatistics (user_id, quiz_id, attempts, completed)
+        VALUES(?, ?, 1, true)
+
+        ON DUPLICATE KEY UPDATE
+        completed = true
+    `
+
+    db.query(sql, [req.userId, quiz_id], (err, data)=>{
+        if (err){
+            next(err);
+        }
+
+        return res.json(data);
+
+    })
+})
+
 router.get('/:levelId/next', (req, res, next)=>{
     const levelId = req.params.levelId;
 
@@ -83,7 +124,6 @@ router.get('/:levelId/next', (req, res, next)=>{
         if (err){
             return next(err);
         }
-        console.log(levelId);
 
         //if there is no next level, return null
         if (data.length === 0){
@@ -93,7 +133,6 @@ router.get('/:levelId/next', (req, res, next)=>{
         return res.json(data[0].id);
     })
 })
-
 
 
 //private, require login

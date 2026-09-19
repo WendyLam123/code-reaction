@@ -51,7 +51,6 @@ function Note(){
 
     const saveNote_database = async (note) =>{
         try{
-            
             //auth
             const token = localStorage.getItem('token');
             if (!token){

@@ -3,6 +3,8 @@ import { data, Link, useParams} from "react-router";
 import "../styles/Level.css";
 
 import Nav from "../components/Nav";
+import Quiz from "../components/lessonPage/Quiz";
+import Lesson from "../components/lessonPage/Lesson";
 
 function Level(){
     const {levelId} = useParams();
@@ -15,15 +17,11 @@ function Level(){
     //get next level id for the next button
     const [nextLevel, setNextLevel] = useState(null);
 
-    //quiz feature
-    const [quizInput, setQuizInput] = useState("");
-    const [selectedAnswer, setSelectedAnswer] = useState(null);
-
 
     useEffect(() => {
         const getPages = async () =>{
             try{
-                
+                //fetched data has duplicate value due to left join (e.g. multiple answer)
                 const res = await fetch(`/api/Levels/${levelId}`);
 
                 if (!res.ok){
@@ -65,10 +63,8 @@ function Level(){
                         })
                     }
                 })
-                console.log(dataMap);
 
                 const pages = [...dataMap.values()];
-                console.log(pages);
 
                 //get the biggest page id, and use it to get the next level id
                 const lastPageId = Math.max(...pages.map((page)=> page.id));
@@ -78,8 +74,6 @@ function Level(){
                 }
                 
                 const nextId = await nextRes.json();
-                console.log(`Next Level ID: ${nextId}`);
-                //console.log('answer: ' + pages[10].answers[1].answer)
 
                 setPages(pages);
                 //levelId is string, convert to number first
@@ -96,111 +90,6 @@ function Level(){
         };
         getPages();
     }, [levelId]);
-
-
-    function Lesson({ page }){
-        return (
-            <div 
-                dangerouslySetInnerHTML={{__html: page.content}}
-            />
-        )
-    }
-
-
-    function checkMultiAnswer(answer){
-        //if it's not selected, return ""
-        if (!selectedAnswer){
-            return "";
-        }
-
-        //if previous selected button, don't add class
-        if (selectedAnswer.answer_id !== answer.answer_id){
-            return "";
-        }
-
-        //if the selected is correct (===1)
-        if (answer.is_correct){
-            return "correct";
-        }
-        return "wrong"
-    }
-
-    function checkInputAnswer(page){
-        const correctAnswer = page.answers[0].answer;
-        if (quizInput.trim().toLowerCase() === correctAnswer){
-            setSelectedAnswer("correct")
-        }else{
-            setSelectedAnswer("wrong")
-        }
-    }
-
-
-    function Quiz({ page }) {
-        console.log(page.answers)
-
-        switch (page.question_type) {
-            case "multiple_choice":
-                return (
-                    <div className="quiz_multi_container">
-                        <div 
-                            dangerouslySetInnerHTML={{__html: page.question}}
-                        />
-
-                        <div className="quiz_multi_buttons">
-                            {page.answers.map((answer) => (
-                                <button 
-                                    className={`quiz_multi_button ${checkMultiAnswer(answer)}`}
-                                    key={answer.answer_id}
-                                    onClick={()=>setSelectedAnswer(answer)}
-                                    >
-                                    {answer.answer}
-                                </button>
-                            ))}
-                        </div>
-
-                    </div>
-                );
-
-            case "input":
-                return (
-                    <div className="quiz_input_container">
-                        <div className="quiz_input_question"
-                            dangerouslySetInnerHTML={{__html: page.question}}
-                        />
-                        <div className="quiz_input_subContainer">
-                            <input 
-                                type="text" 
-                                name="quiz_input" 
-                                value={quizInput}
-                                onChange={(e)=>{setQuizInput(e.target.value)}}
-                                placeholder="Type your answer here..."/>
-                            <button
-                                type="submit"
-                                onClick={()=>checkInputAnswer(page)}
-                            >Submit</button>
-
-                            <div
-                                className={
-                                    selectedAnswer === "correct"
-                                        ? "isCorrect"
-                                        : selectedAnswer === "wrong"
-                                        ? "isWrong"
-                                        : ""
-                                }
-                                >{selectedAnswer === "correct"
-                                    ? "Correct!"
-                                    : selectedAnswer === "wrong"
-                                    ? "Wrong, Try again!"
-                                    : ""}
-                            </div>
-                        </div>
-                    </div>
-                );
-
-            default:
-                return <p>Unknown question type</p>;
-        }
-    }
 
     //if the data is not finish loading...
     if (loading){

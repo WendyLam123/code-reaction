@@ -31,7 +31,6 @@ export default function Levels(){
                 //if success
                 const coursesData = await resCourse.json();
                 const levelsData = await resLevels.json();
-
                 setCourses(coursesData);
                 setLevels(levelsData);
             } catch(err){
@@ -123,4 +122,3 @@ export default function Levels(){
         </main>
     )
 }
-

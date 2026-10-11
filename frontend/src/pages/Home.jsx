@@ -1,13 +1,16 @@
 import "../styles/Home.css";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router";
+import {useAuth} from "../contexts/AuthContext";
 
 import Nav from "../components/Nav";
 
-import shipBeige_manned from "../assets/characters/shipBeige_manned.png";
-import shipYellow_manned from "../assets/characters/shipYellow_manned.png";
+const shipBeige_manned = "/assets/characters/shipBeige_manned.png";
+const shipYellow_manned = "/assets/characters/shipYellow_manned.png";
 
 
 function Home() {
+  const {isLoggedIn, logout} = useAuth();
 
   return (
     <div className="homePage">
@@ -30,17 +33,32 @@ function Home() {
         </div>
 
         <div className="buttons">
-          <Link to="/levels">
-            <button className="gameButton">Start Game</button>
-          </Link>
 
-          <Link to="/userProgress">
-            <button className="gameButton">Home</button>
-          </Link>
+          {isLoggedIn? (
+              <>
+            <Link to="/Learn" className="gameButton">
+              Start Game
+            </Link>
 
-          <Link to="/note">
-            <button className="gameButton">Note</button>
-          </Link>
+            <Link to="/UserProgress" className="gameButton">
+              Home
+            </Link>
+
+            <Link to="/note" className="gameButton">
+              Note
+            </Link>
+              </>
+          ):
+            <>
+            <Link to="/login" className="gameButton">
+              Login
+            </Link>
+
+            <Link to="/levels" className="gameButton">
+              Continue as a gust
+            </Link>
+            </>
+          }
 
         </div>
       </div>

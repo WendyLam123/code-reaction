@@ -3,6 +3,7 @@ import {Link, useNavigate} from 'react-router';
 import '../styles/Login_Signup.css';
 
 const Register = () => {
+
     const [values, setValues] = useState({
         username: '',
         email: '',

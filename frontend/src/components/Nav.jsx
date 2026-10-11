@@ -37,7 +37,7 @@ function Nav() {
             <div className="nav-dropdown">
                 <Link to="/">Home</Link>
                 <Link to="/Note">Note</Link>
-                <Link to="/Levels">Learn</Link>
+                <Link to="/Learn">Learn</Link>
             </div>
             )}
         </nav>

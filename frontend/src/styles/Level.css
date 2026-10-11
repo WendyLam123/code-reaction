@@ -10,7 +10,7 @@
     font-weight: bold;
 }
 
-.nextLevelButton{
+.nextCourseButton{
     grid-column: 3;
     justify-self: end;
     background: #f4eddf;
@@ -404,4 +404,13 @@
 
 .wrong, .wrong:hover{
     background-color: red;
+}
+
+.nextButtonContainer{
+    display: flex;
+    width: 100%;
+    gap: 50px;
+    background-color: white;
+    justify-content: center;
+    align-items: center;;
 }

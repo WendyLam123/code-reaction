@@ -5,6 +5,7 @@ import "../styles/Note.css";
 import Sidebar from "../components/notes/Sidebar";
 import Main from "../components/notes/Main";
 import Nav from "../components/Nav";
+import { useAuth } from "../contexts/AuthContext";
 
 function Note(){
     const [notes, setNotes] = useState([]);
@@ -13,28 +14,34 @@ function Note(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate(); 
+    const {isLoggedIn, logout, token} = useAuth();
 
     //updated get note fetch, need to update the rest 
 
     useEffect(() => {
         const getNotes = async () =>{
-            try{
-                const token = localStorage.getItem('token');
-                if (!token){
-                    console.log("no token");
-                    navigate('/login');
-                    return;
-                }
+            if (!isLoggedIn){
+                navigate('/login');
+                return;
+            }
 
+            try{
                 const res = await fetch("/api/note/", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
+                if (res.status === 401) {
+                    logout();
+                    navigate("/login");
+                    return;
+                }
+
                 if (!res.ok){
                     throw new Error("Data not loaded");
                 }
+
                 const data = await res.json();
 
                 //console.log(data);
@@ -47,16 +54,20 @@ function Note(){
         };
 
         getNotes();
-    }, []);
+    }, [isLoggedIn, token]);
 
     const saveNote_database = async (note) =>{
         try{
+<<<<<<< HEAD
             //auth
             const token = localStorage.getItem('token');
             if (!token){
+=======
+           if (!isLoggedIn){
+>>>>>>> ed41d36 (Added basic program logic and test cases)
                 navigate('/login');
                 return;
-            };
+            }
         
             //two cases: 1: temp note(hasn't save to the database). 2: saved noted-->update it
             if (note.id){
@@ -76,6 +87,12 @@ function Note(){
                 });
 
                 //if error: 
+                if (res.status === 401) {
+                    logout();
+                    navigate("/login");
+                    return;
+                }
+
                 if (!res.ok){
                     throw new Error("Failed to update note");
                 }
@@ -98,6 +115,12 @@ function Note(){
                         lastModified: Date.now()
                     })
                 });
+
+                if (res.status === 401) {
+                    logout();
+                    navigate("/login");
+                    return;
+                }
 
                 if (!res.ok){
                     throw new Error("Failed to create note");
@@ -130,27 +153,36 @@ function Note(){
 
     const onDeleteNote = async (note) =>{
         //auth
-        const token = localStorage.getItem('token');
-        if (!token){
+        if (!isLoggedIn){
             navigate('/login');
             return;
         }
 
-        //if note exists in the database (not temp note)
-        if (note.id){
-            const res = await fetch(`/api/note/${note.id}`, {
-                method: "DELETE", 
-                headers: {"Authorization": `Bearer ${token}`}
-            });
-            if (!res.ok){
-                throw new Error("Failed to delete note");
-            }
-        }
-        //Delete note (temp or saved) from react
+        try{
+            //if note exists in the database (not temp note)
+            if (note.id){
+                const res = await fetch(`/api/note/${note.id}`, {
+                    method: "DELETE", 
+                    headers: {"Authorization": `Bearer ${token}`}
+                });
+                if (res.status === 401) {
+                    logout();
+                    navigate("/login");
+                    return;
+                }
 
-        setNotes((prevNotes)=>prevNotes.filter((i) => (i.id ?? i.tempId) !== (note.id ?? note.tempId)));
-        if ((note.id ?? note.tempId) === activeNote){
-            setActiveNote(null);
+                if (!res.ok){
+                    throw new Error("Failed to delete note");
+                }
+            }
+            //Delete note (temp or saved) from react
+
+            setNotes((prevNotes)=>prevNotes.filter((i) => (i.id ?? i.tempId) !== (note.id ?? note.tempId)));
+            if ((note.id ?? note.tempId) === activeNote){
+                setActiveNote(null);
+            }
+        }catch(err){
+            setError(err);
         }
     };
 

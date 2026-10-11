@@ -3,7 +3,7 @@ import connectToDatabase from "./db.js";
 import auth from './routes/auth.js';
 import userProgress from './routes/userProgress.js';
 import note from './routes/note.js';
-import levels from './routes/levels.js';
+import courses from './routes/courses.js';
 
 const app = express();
 
@@ -11,20 +11,9 @@ app.use(express.json());
 app.use('/api/auth', auth);
 app.use('/api/userProgress', userProgress);
 app.use('/api/note', note);
-app.use('/api/levels', levels);
+app.use('/api/courses', courses);
 
 let db = connectToDatabase();
-
-app.get('/api/courses/', (req, res, next)=>{
-    const sql = "SELECT * FROM courses";
-    //use callback so need next(err)
-    db.query(sql, (err, data)=>{
-        if (err){
-            return next(err);
-        }
-        return res.json(data);
-    })
-});
 
 //404 hander
 app.use((req, res) =>{

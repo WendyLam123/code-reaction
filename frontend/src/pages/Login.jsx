@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import {Link, useNavigate} from 'react-router';
+import { useAuth } from "../contexts/AuthContext";
 import '../styles/Login_Signup.css';
 
 const Login = () => {
+    const {login} = useAuth();
+
     const [values, setValues] = useState({
         username: '',
         email: '',
@@ -35,7 +38,7 @@ const Login = () => {
 
             if (response.status === 201){
                 //store token to localstorage
-                localStorage.setItem('token', data.token);
+                login(data.token);
                 navigate("/")
             }
             

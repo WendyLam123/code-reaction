@@ -17,17 +17,31 @@ const BLOCK = {
     },
 }
 
+const PROGRAM_BLOCK = [{
+    id: 2,
+    belong: "setup",
+    type: "create_sprite",
+    order: 2,
+    values: {
+      name: "block",
+      x: 100,
+      y: 200,
+      width: 50,
+      height: 160,
+    },
+}]
+
 let p, program, sprite;
 
 beforeEach(()=>{
     p = createMockP();
-    program = new Program(p,BLOCK);
+    program = new Program(p,PROGRAM_BLOCK);
     sprite = new CreateSprite(BLOCK);
 })
 
 
 test('Create a Sprite instance successfully', () =>{
-    program.declaredVariables.set(BLOCK.values.name, true);
+    program.validationContext.declaredVariables.add(BLOCK.values.name);
 
     sprite.validate(program);
     sprite.execute(program);

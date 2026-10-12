@@ -37,13 +37,13 @@ export default class CreateSprite extends Block{
             return false;
         }
 
-        program.createdSprites.set(this.name, true);
+        program.addContext('create_sprite', this.name);
         return true;
     }
 
     execute(program){
         const sprite = new program.p.Sprite(this.x, this.y, this.width, this.height);
-        program.createdSprites.set(this.name, true);
+        program.createdSprites.set(this.name, sprite);
     }
 
 }

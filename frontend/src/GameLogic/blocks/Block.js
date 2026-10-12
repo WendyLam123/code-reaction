@@ -50,10 +50,4 @@ export default class Block{
             `${this.constructor.name} must implement execute()`
         )
     }
-
-    execute(program){
-        throw new Error(
-            `${this.constructor.name} must implement execute()`
-        )
-    }
 }

@@ -1,19 +1,25 @@
 import Block from "./blocks/Block.js";
 import CreateSprite from "./blocks/CreateSprite.js";
+import DeclearVariable from "./blocks/DeclearVariable.js";
 
 export default class Program {
     constructor(p, blocks=[]){
         //import p5play instance
         this.p = p;
-        this.blocks = blocks;
+        this.blocks = [...blocks].sort((a,b)=>a.order - b.order)
 
         //context
-        //"sprite name": SpriteInstance
+        //store sprite so later can update it when have sprite-related block
         this.createdSprites = new Map();
-        //'sprite name' : true
-        this.declaredVariables = new Map();
+        this.variables = new Map();
+
         //"sprite id ": error message
         this.errors = new Map();
+
+        this.validationContext = {
+            declaredVariables: new Set(),
+            scheduledSprites: new Set()
+        }
 
         //game status
         this.isRunning = false;
@@ -26,13 +32,13 @@ export default class Program {
         }
     }
     
-    addContext(contextType, contextKey, contextValue){
+    addContext(contextType, context){
         switch(contextType){
             case "create_sprite":
-                this.createdSprites.set(contextKey, contextValue);
+                this.validationContext.scheduledSprites.add(context);
                 break;
             case "declare_variable":
-                this.declaredVariables.set(contextKey, true);
+                this.validationContext.declaredVariables.add(context);
                 break;
             default:
                 throw new Error(`Unknown context type: ${contextType}`);
@@ -46,9 +52,9 @@ export default class Program {
     checkContext(contextType, contextKey){
         switch(contextType){
             case "create_sprite":
-                return this.createdSprites.has(contextKey);
+                return this.validationContext.scheduledSprites.has(contextKey);
             case "declare_variable":
-                return this.declaredVariables.has(contextKey);
+                return this.validationContext.declaredVariables.has(contextKey);
             default:
                 throw new Error(`Unknown context type: ${contextType}`);
         };
@@ -56,6 +62,9 @@ export default class Program {
 
     createBlock(rawBlock){
         switch(rawBlock.type){
+            case "declaration":
+                return new DeclearVariable(rawBlock);
+
             case "create_sprite":
                 return new CreateSprite(rawBlock);
             
@@ -66,17 +75,6 @@ export default class Program {
     }
 
     compileBlocks(){
-        this.errors.clear();
-        
-        this.executableBlock = {
-            global: [],
-            setup: [],
-            update: [],
-            draw: []
-        }
-
-        const sortedBlock = [...this.blocks].sort((a,b)=>a.order - b.order)
-
 
         for (const rawBlock of this.blocks){
             if (!Object.hasOwn(this.executableBlock, rawBlock.belong)){
@@ -85,33 +83,67 @@ export default class Program {
                 continue;
             }
             const block = this.createBlock(rawBlock);
-            //if block is null, don't compil this
+
+            //if block is null, don't compile this: error message should be added to errors
             if (!block){
                 continue;
             }
 
             const isValid = block.validate(this);
-            if (!isValid){
+            if (isValid === false){
                 continue;
             }
 
             this.executableBlock[rawBlock.belong].push(block);
         }
+
+        return this.errors.size === 0;
     }
 
-
     setup(){
-        this.isRunning = true;
-        for (const block of this.executableBlock.setup){
-            block.execute(this);
+        if (this.errors.size > 0){
+            return false;
         }
+
+        this.isRunning = true;
+
+        const setupCode = this.executableBlock.setup;
+
+        for (const code of setupCode){
+            code.execute(this);
+        }
+        
+        return true;
     }
 
     update(){
 
     }
-    reset(){
 
+    reset() {
+        this.errors.clear();
+
+        this.createdSprites.clear();
+        this.variables.clear();
+        this.isRunning = false;
+
+        this.validationContext = {
+            declaredVariables: new Set(),
+            scheduledSprites: new Set()
+        };
+
+        this.executableBlock = {
+            global: [],
+            setup: [],
+            update: [],
+            draw: []
+        };
+
+        for (const sprite of this.createdSprites.values()) {
+            sprite.remove();
+        }
+
+        this.createdSprites.clear();
     }
 
 }

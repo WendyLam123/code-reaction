@@ -9,6 +9,7 @@ import Level from './pages/Level.jsx';
 import Register from './pages/Register.jsx';
 import Login from './pages/Login.jsx';
 import UserProgress from './pages/UserProgress.jsx';
+import p5playTest from '../src/GameLogic/temp.jsx';
 
 export default function App(){
     return (
@@ -25,6 +26,8 @@ export default function App(){
         <Route path="Note" element={<Note/>}/>
         <Route path="Register" element={<Register/>}/>
         <Route path="Login" element={<Login/>}/>
+
+        
       </Routes>
     </BrowserRouter>
     )

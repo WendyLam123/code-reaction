@@ -3,17 +3,12 @@ import { useParams, useNavigate } from "react-router";
 import "../styles/Level.css";
 
 import Nav from "../components/Nav";
-<<<<<<< HEAD
-import Quiz from "../components/lessonPage/Quiz";
-import Lesson from "../components/lessonPage/Lesson";
-=======
 import Game from "../components/lessonPage/game/Game";
 import Quiz from "../components/lessonPage/quiz/Quiz";
 
 function Level() {
     const { courseId, pageOrder } = useParams();
     const navigate = useNavigate();
->>>>>>> ed41d36 (Added basic program logic and test cases)
 
     const [pages, setPages] = useState([]);
     const [currentPage, setCurrentPage] = useState(null);
@@ -28,26 +23,16 @@ function Level() {
         (page) => page.page_order === currentOrder + 1
     );
 
-<<<<<<< HEAD
-=======
     const previousPage = pages.find(
         (page) => page.page_order === currentOrder - 1
     );
 
->>>>>>> ed41d36 (Added basic program logic and test cases)
 
     // Get all pages belonging to this course
     useEffect(() => {
-<<<<<<< HEAD
-        const getPages = async () =>{
-            try{
-                //fetched data has duplicate value due to left join (e.g. multiple answer)
-                const res = await fetch(`/api/Levels/${levelId}`);
-=======
         const getPages = async () => {
             try {
                 setLoading(true);
->>>>>>> ed41d36 (Added basic program logic and test cases)
 
                 const res = await fetch(`/api/courses/${courseId}`);
 
@@ -59,58 +44,9 @@ function Level() {
 
                 setPages(data);
 
-<<<<<<< HEAD
-                data.forEach(row=>{
-                    if (!dataMap.has(row.id)){
-                        dataMap.set(row.id, {
-                            id: row.id,
-                            course_id: row.course_id,
-                            courses_title: row.courses_title,
-                            title: row.title,
-                            content: row.content,
-                            page_type: row.page_type,
-
-                            quiz_id: row.quiz_id,
-                            question: row.question,
-                            question_type: row.question_type,
-
-                            answers: []
-                        });
-                    }
-
-                    //check if the levelPage has a quiz content(check if answer_id exist), if so, put the related content to a array
-                    //if multichoice: answer is the choice
-                    //if input: answer is the correct answer, later check user input with this
-                    //[{answer1...}, {answer2...}]
-                    if (row.answer_id !== null){
-                        dataMap.get(row.id).answers.push({
-                            answer_id: row.answer_id, 
-                            answer: row.answer,
-                            is_correct: row.is_correct
-                        })
-                    }
-                })
-
-                const pages = [...dataMap.values()];
-
-                //get the biggest page id, and use it to get the next level id
-                const lastPageId = Math.max(...pages.map((page)=> page.id));
-                const nextRes = await fetch(`/api/Levels/${lastPageId}/next`);
-                if (!nextRes.ok){
-                    throw new Error("Next level data not loaded");
-                }
-                
-                const nextId = await nextRes.json();
-
-                setPages(pages);
-                //levelId is string, convert to number first
-                setCurrentPage(
-                    pages.find((page)=> page.id === parseInt(levelId))
-=======
                 // Find the current page using page_order
                 const page = data.find(
                     (page) => page.page_order === Number(pageOrder)
->>>>>>> ed41d36 (Added basic program logic and test cases)
                 );
 
                 if (!page) {
@@ -130,21 +66,6 @@ function Level() {
         getPages();
     }, [courseId, pageOrder]);
 
-<<<<<<< HEAD
-    //if the data is not finish loading...
-    if (loading){
-        return <p>Please wait, page is loading...</p>
-    }
-
-    if (error){
-        return <p>Error: {error.message}</p>
-    }
-
-    if (!currentPage){
-    return <p>Page not found</p>
-    }
-
-=======
     //go to next page within the same course
     function changePage(direction) {
         if (direction === "next") {
@@ -187,7 +108,6 @@ function Level() {
     }
 
     //Render Lesson Page
->>>>>>> ed41d36 (Added basic program logic and test cases)
     return (
         <main className="level_main">
             <div className="lesson">

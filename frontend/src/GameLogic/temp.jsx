@@ -1,67 +1,83 @@
-import Program from "./Progam";
 import { useEffect, useRef } from "react";
 import p5 from "p5";
 import planck from "planck";
+import Program from "./Progam";
 
-export default function p5playTest() {
+export default function P5playTest() {
   const containerRef = useRef(null);
-
-  const CODE_BLOCKS = [
-    {
-      id: 1,
-      type: "declaration",
-      belong: "global",
-      order: 1,
-      values: {
-        name: "block",
-      },
-    },
-    {
-      id: 2,
-      belong: "setup",
-      type: "create_sprite",
-      order: 2,
-      values: {
-        name: "block",
-        x: 100,
-        y: 200,
-        width: 50,
-        height: 160,
-      },
-    },
-  ];
-
-  const program = new Program(CODE_BLOCKS);
 
   useEffect(() => {
     let game = null;
     let cancelled = false;
 
-    const startGame = async () => {
-      // Make dependencies available globally
-      window.p5 = p5;
-      window.planck = planck;
+    const CODE_BLOCKS = [
+      {
+        id: 1,
+        type: "declaration",
+        belong: "global",
+        order: 1,
+        values: {
+          name: "block",
+        },
+      },
+      {
+        id: 2,
+        type: "create_sprite",
+        belong: "setup",
+        order: 2,
+        values: {
+          name: "block",
+          x: 100,
+          y: 200,
+          width: 100,
+          height: 100,
+        },
+      },
+    ];
 
-      // Load p5play after p5 and planck
-      await import("p5play");
+    async function startGame() {
+      try {
+        // Make dependencies available to p5play.
+        window.p5 = p5;
+        window.planck = planck;
 
-      if (cancelled) return;
+        // Load p5play before creating the sketch.
+        await import("p5play");
 
-      const sketch = (p) => {
-        program.reset();
-        program.compileBlocks();
+        // The component may have unmounted while importing.
+        if (cancelled || !containerRef.current) return;
 
-        p.setup = () => {
-          program.setup();
+        const sketch = (p) => {
+          const program = new Program(p, CODE_BLOCKS);
+
+          p.setup = () => {
+            p.createCanvas(600, 400);
+            p.background(240);
+
+            program.reset();
+
+            const isValid = program.compileBlocks();
+
+            if (isValid) {
+              program.setup();
+            } else {
+              console.error(
+                "Program validation failed:",
+                program.errors
+              );
+            }
+          };
+
+          p.draw = () => {
+            p.background(240);
+          };
         };
 
-        p.draw = () => {
-          // Intentionally left blank; add rendering logic here if needed.
-        };
-      };
-
-      game = new p5(sketch, containerRef.current);
-    };
+        game = new p5(sketch, containerRef.current);
+      } catch (error) {
+        console.error("Failed to initialize p5play:", error);
+      }
+    }
 
     startGame();
 

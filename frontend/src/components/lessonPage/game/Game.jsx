@@ -8,7 +8,7 @@ import {DragDropProvider} from '@dnd-kit/react';
 import {move} from '@dnd-kit/helpers'
 import Column from "./Column";
 import Item from "./Item";
-import P5Game from './p5Game/test'
+import P5playTest from '../../../GameLogic/temp';
 
 export default function Game({page, changePage, goToNextCourse}) {
     const { levelId } = useParams();
@@ -101,7 +101,7 @@ export default function Game({page, changePage, goToNextCourse}) {
 
         <div className="mainContainer">
             <div className="leftPanel" id="gameContainer">
-                <P5Game submittedCode={submittedCode}/>
+                <P5playTest/>
             </div>
 
             <div className="wholerightPanel">

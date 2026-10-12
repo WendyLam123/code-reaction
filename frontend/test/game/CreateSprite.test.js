@@ -43,23 +43,23 @@ beforeEach(()=>{
 test('Create a Sprite instance successfully', () =>{
     program.validationContext.declaredVariables.add(BLOCK.values.name);
 
-    sprite.validate(program);
+    expect(sprite.validate(program)).toBe(true);
     sprite.execute(program);
     expect(program.p.Sprite).toHaveBeenCalledTimes(1);
     expect(program.createdSprites.has(BLOCK.values.name)).toBe(true);
-    expect(program.errors).toHaveLength(0);
+    expect(program.errors.size).toBe(0);
 
 })
 
 test('Sprite not declared before create', () =>{
-    sprite.validate(program);
-    sprite.execute(program);
+    expect(sprite.validate(program)).toBe(false);
     expect(program.errors.has(BLOCK.id)).toBe(true);
+    expect(program.p.Sprite).not.toHaveBeenCalled();
 })
 
 test('Sprite created before', () =>{
     program.createdSprites.set(BLOCK.values.name, true);
-    sprite.validate(program);
-    sprite.execute(program);
+    expect(sprite.validate(program)).toBe(false);
+    expect(program.p.Sprite).not.toHaveBeenCalled();
     expect(program.errors.has(BLOCK.id)).toBe(true);
 })

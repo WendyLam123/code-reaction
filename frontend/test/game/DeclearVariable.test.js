@@ -34,7 +34,8 @@ beforeEach(()=>{
 })
 
 test('declare a block variable', ()=>{
-    expect(block.name).toBe("block");
+    expect(block.validate(program)).toBe(true);
+    expect(program.validationContext.declaredVariables.has('block')).toBe(true);
 })
 
 test('variable declared twice', ()=>{

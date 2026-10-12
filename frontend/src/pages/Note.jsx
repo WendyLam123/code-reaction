@@ -58,13 +58,7 @@ function Note(){
 
     const saveNote_database = async (note) =>{
         try{
-<<<<<<< HEAD
-            //auth
-            const token = localStorage.getItem('token');
-            if (!token){
-=======
            if (!isLoggedIn){
->>>>>>> ed41d36 (Added basic program logic and test cases)
                 navigate('/login');
                 return;
             }

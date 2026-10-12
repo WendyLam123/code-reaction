@@ -65,7 +65,7 @@ describe('add context', ()=>{
 
 test('add error message to error map', ()=>{
   program.addError("1", "Test Message");
-  expect(program.errors.has("1"));
+  expect(program.errors.has("1")).toBe(true);
 })
 
 describe('check context', ()=>{
@@ -90,7 +90,7 @@ describe('check context', ()=>{
   })
 
   test('unknown context', ()=>{
-    expect(()=>program.checkContext('unknown').toThrow())
+    expect(()=>program.checkContext('unknown')).toThrow();
   })
 })
 
@@ -150,5 +150,41 @@ describe('Program integration', ()=>{
     expect(program.setup()).toBe(true);
     expect(p.Sprite).toHaveBeenCalledTimes(1);
     expect(program.createdSprites.has('block')).toBe(true);
+  })
+
+  test('does not create a sprite if validation fail', ()=>{
+    const invalidBlocks = [
+    {
+        id: 1,
+        type: "declaration",
+        belong: "global",
+        order: 2,
+        values: { 
+          name: "block" 
+        }
+    },
+    {
+      id: 2,
+      belong: "setup",
+      type: "create_sprite",
+      order: 1,
+      values: {
+        name: "block",
+        x: 100,
+        y: 200,
+        width: 50,
+        height: 160,
+      },
+    }
+  ];
+
+    program.blocks = invalidBlocks;
+    expect(program.compileBlocks()).toBe(false);
+    program.setup();
+
+    expect(p.Sprite).not.toHaveBeenCalled();
+    expect(program.errors.has(2)).toBe(true);
+    console.log(program.errors);
+    
   })
 })

@@ -75,7 +75,7 @@ export default class Program {
     }
 
     compileBlocks(){
-
+        this.blocks = [...this.blocks].sort((a,b)=>a.order - b.order)
         for (const rawBlock of this.blocks){
             if (!Object.hasOwn(this.executableBlock, rawBlock.belong)){
                 this.addError(rawBlock.id, `Unknown phase: ${rawBlock.belong}`);

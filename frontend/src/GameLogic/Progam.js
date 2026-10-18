@@ -1,12 +1,13 @@
 import Block from "./blocks/Block.js";
 import CreateSprite from "./blocks/CreateSprite.js";
 import DeclearVariable from "./blocks/DeclearVariable.js";
+import SetVelocity from "./blocks/SetVelocity.js";
 
 export default class Program {
     constructor(p, blocks=[]){
         //import p5play instance
         this.p = p;
-        this.blocks = [...blocks].sort((a,b)=>a.order - b.order)
+        this.blocks = blocks;
 
         //context
         //store sprite so later can update it when have sprite-related block
@@ -18,7 +19,7 @@ export default class Program {
 
         this.validationContext = {
             declaredVariables: new Set(),
-            scheduledSprites: new Set()
+            scheduledSprites: new Set(),
         }
 
         //game status
@@ -67,6 +68,9 @@ export default class Program {
 
             case "create_sprite":
                 return new CreateSprite(rawBlock);
+
+            case "set_velocity":
+                return new SetVelocity(rawBlock);
             
             default:
                 this.addError(rawBlock.id, `Unknown block type: ${rawBlock.type}`);
@@ -74,8 +78,13 @@ export default class Program {
         }
     }
 
+    getCreatedSprite(spriteName){
+        const result = this.createdSprites.get(spriteName);
+        return result;
+    }
+
     compileBlocks(){
-        this.blocks = [...this.blocks].sort((a,b)=>a.order - b.order)
+
         for (const rawBlock of this.blocks){
             if (!Object.hasOwn(this.executableBlock, rawBlock.belong)){
                 this.addError(rawBlock.id, `Unknown phase: ${rawBlock.belong}`);
@@ -120,10 +129,13 @@ export default class Program {
 
     }
 
+    draw(){
+
+    }
+
     reset() {
         this.errors.clear();
 
-        this.createdSprites.clear();
         this.variables.clear();
         this.isRunning = false;
 

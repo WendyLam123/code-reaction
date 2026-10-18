@@ -104,7 +104,8 @@ test('compiles a CreateSprite instance', () => {
   program.blocks = [BLOCK];
   program.addContext('declare_variable', 'block');
 
-  program.compileBlocks();
+  program.compileBlocks()
+  console.log(program.errors)
 
   expect(program.executableBlock.setup).toHaveLength(1);
   expect(program.executableBlock.setup[0]).toBeInstanceOf(CreateSprite);
@@ -155,15 +156,6 @@ describe('Program integration', ()=>{
   test('does not create a sprite if validation fail', ()=>{
     const invalidBlocks = [
     {
-        id: 1,
-        type: "declaration",
-        belong: "global",
-        order: 2,
-        values: { 
-          name: "block" 
-        }
-    },
-    {
       id: 2,
       belong: "setup",
       type: "create_sprite",
@@ -175,6 +167,15 @@ describe('Program integration', ()=>{
         width: 50,
         height: 160,
       },
+    },
+    {
+        id: 1,
+        type: "declaration",
+        belong: "global",
+        order: 2,
+        values: { 
+          name: "block" 
+        }
     }
   ];
 
@@ -186,5 +187,14 @@ describe('Program integration', ()=>{
     expect(program.errors.has(2)).toBe(true);
     console.log(program.errors);
     
+  })
+})
+
+describe('getCreatedSprite', ()=>{
+  test('get a existed sprite', ()=>{
+    let sprite = new CreateSprite(BLOCK);
+    program.createdSprites.set(BLOCK.name, sprite)
+    const actual = program.getCreatedSprite(BLOCK.name);
+    expect(actual).toBeInstanceOf(CreateSprite);
   })
 })

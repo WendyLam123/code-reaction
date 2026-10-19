@@ -194,7 +194,7 @@ describe('getCreatedSprite', ()=>{
   test('get a existed sprite', ()=>{
     let sprite = new CreateSprite(BLOCK);
     program.createdSprites.set(BLOCK.name, sprite)
-    const actual = program.getCreatedSprite(BLOCK.name);
+    const actual = program.getSprite(BLOCK.name, 'userBlock');
     expect(actual).toBeInstanceOf(CreateSprite);
   })
 })

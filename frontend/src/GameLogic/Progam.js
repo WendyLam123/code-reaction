@@ -2,6 +2,7 @@ import Block from "./blocks/Block.js";
 import CreateSprite from "./blocks/CreateSprite.js";
 import DeclearVariable from "./blocks/DeclearVariable.js";
 import SetVelocity from "./blocks/SetVelocity.js";
+import IfStatement from "./blocks/IfStatement.js";
 
 export default class Program {
     constructor(p, blocks=[]){
@@ -12,6 +13,7 @@ export default class Program {
         //context
         //store sprite so later can update it when have sprite-related block
         this.createdSprites = new Map();
+        this.gameObjects = new Map();
         this.variables = new Map();
 
         //"sprite id ": error message
@@ -31,6 +33,10 @@ export default class Program {
             update: [],
             draw: []
         }
+    }
+
+    registerGameObject(name, sprite) {
+        this.gameObjects.set(name, sprite);
     }
     
     addContext(contextType, context){
@@ -71,6 +77,9 @@ export default class Program {
 
             case "set_velocity":
                 return new SetVelocity(rawBlock);
+
+            case "if":
+                return new IfStatement(rawBlock);
             
             default:
                 this.addError(rawBlock.id, `Unknown block type: ${rawBlock.type}`);
@@ -78,9 +87,14 @@ export default class Program {
         }
     }
 
-    getCreatedSprite(spriteName){
-        const result = this.createdSprites.get(spriteName);
-        return result;
+    getSprite(spriteName, spriteSource) {
+        if (spriteSource === "userBlock") {
+            return this.createdSprites.get(spriteName);
+        } else if (spriteSource === "gameBlock") {
+            return this.gameObjects.get(spriteName);
+        }
+
+        return undefined;
     }
 
     compileBlocks(){
@@ -126,7 +140,10 @@ export default class Program {
     }
 
     update(){
-
+        const updateCode = this.executableBlock.update;
+        for (const code of updateCode){
+            code.execute(this);
+        }
     }
 
     draw(){

@@ -44,6 +44,7 @@ export default class CreateSprite extends Block{
     execute(program){
         const sprite = new program.p.Sprite(this.x, this.y, this.width, this.height);
         program.createdSprites.set(this.name, sprite);
+        return sprite;
     }
 
 }

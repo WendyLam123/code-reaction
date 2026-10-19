@@ -1,201 +1,343 @@
 import Block from "./Block.js";
 
-const ALLOWED_PROPERTIES = [
-    "x",
-    "y",
-    "vel.x",
-    "vel.y"
-];
+const ALLOWED_PROPERTIES = ["x", "y", "vel.x", "vel.y"];
 
-const ALLOWED_OPERATORS = [
-    ">",
-    "<",
-    ">=",
-    "<=",
-    "===",
-    "!=="
-];
+const ALLOWED_OPERATORS = [">", "<", ">=", "<=", "===", "!=="];
 
-const IF_BLOCK = {
-    id: 3,
-    belong: "update",
-    type: "if",
-    order: 3,
-    values: {
-        condition: [
-            {
-                target: "crate",
-                property: "x",
-                operator: ">",
-                value: 300
-            }
-        ],
-        actions: [
-            {
-                type: "set_velocity",
-                values: {
-                    name: "block",
-                    val_x: 0,
-                    val_y: 0
-                }
-            },
-            {
-                type: "set_velocity",
-                values: {
-                    name: "alien",
-                    val_x: 0,
-                    val_y: 10
-                }
-            }
-        ]
-    }
+const IF_BLOCK1 = {
+  id: 3,
+  belong: "update",
+  type: "if",
+  order: 3,
+  values: {
+    condition: [
+      {
+        type: "detectDistance",
+        target: {
+          name: "crate",
+          source: "userBlock",
+        },
+        property: "x",
+        operator: ">",
+        value: 300,
+      },
+    ],
+    actions: [
+      {
+        type: "set_velocity",
+        values: {
+          target: {
+            name: "block",
+            source: "userBlock",
+          },
+          vel: { x: 0, y: 0 },
+        },
+      },
+      {
+        type: "set_velocity",
+        values: {
+          target: {
+            name: "alien",
+            source: "gameBlock",
+          },
+          vel: { x: 10, y: 15 },
+        },
+      },
+    ],
+  },
+};
+
+const IF_BLOCK2 = {
+  id: 4,
+  belong: "update",
+  type: "if",
+  order: 4,
+  values: {
+    condition: [
+      {
+        type: "detectCollision",
+        from: {
+          name: "block",
+          source: "userBlock",
+        },
+        to: {
+          name: "crateCollider",
+          source: "gameBlock",
+        },
+      },
+    ],
+    actions: [
+      {
+        type: "set_velocity",
+        values: {
+          target: {
+            name: "block",
+            source: "userBlock",
+          },
+          vel: { x: 10, y: 15 },
+        },
+      },
+      {
+        type: "set_rotation",
+        values: {
+          target: {
+            name: "alien",
+            source: "gameBlock",
+          },
+          rotation: 0,
+        },
+      },
+    ],
+  },
 };
 
 function isValidNumber(value) {
-    return (
-        value !== "" &&
-        value !== null &&
-        value !== undefined &&
-        Number.isFinite(Number(value))
-    );
+  return (
+    value !== "" &&
+    value !== null &&
+    value !== undefined &&
+    String(value).trim() !== "" &&
+    Number.isFinite(Number(value))
+  );
 }
 
-function checkCondition(program, condition){
-    const sprite = program.getCreatedSprite(condition.target);
-    if (!sprite){
-        return false;
+function spriteExists(program, target) {
+  if (!target?.name || !target?.source) {
+    return false;
+  }
+
+  if (target.source === "userBlock") {
+    return program.checkContext("create_sprite", target.name);
+  }
+
+  if (target.source === "gameBlock") {
+    return Boolean(program.getSprite(target.name, target.source));
+  }
+
+  return false;
+}
+
+function checkCondition(program, condition) {
+  if (condition.type === "detectDistance") {
+    const { name, source } = condition.target;
+    const sprite = program.getSprite(name, source);
+
+    if (!sprite) {
+      return false;
     }
-    
+
     let actual;
 
-    switch(condition.property){
-        case "x":
-            actual = sprite.x;
-            break;
-        case "y":
-            actual = sprite.y;
-            break;
-        case "vel.x":
-            actual = sprite.vel.x;
-            break;
-        case "vel.y":
-            actual = sprite.vel.y;
-            break;
-        default:
-            return false;
-    }
-
-    let expected = Number(condition.value);
-    switch (condition.operator) {
-        case ">":
-            return actual > expected;
-        case "<":
-            return actual < expected;
-        case ">=":
-            return actual >= expected;
-        case "<=":
-            return actual <= expected;
-        case "===":
-            return actual === expected;
-        case "!==":
-            return actual !== expected;
-        default:
-            return false;
-    }
-
-}
-
-function checkAction(program, action){
-    const sprite = program.getCreatedSprite(action.values.name);
-    if (!sprite){
+    switch (condition.property) {
+      case "x":
+        actual = sprite.x;
+        break;
+      case "y":
+        actual = sprite.y;
+        break;
+      case "vel.x":
+        actual = sprite.vel.x;
+        break;
+      case "vel.y":
+        actual = sprite.vel.y;
+        break;
+      default:
         return false;
     }
 
-    switch(action.type){
-        case "set_velocity":
-            sprite.val.x = Number(action.values.val_x);
-            sprite.val.y = Number(action.values.val_y);
-            return true;
-            
-        default:
-            return false
+    const expected = Number(condition.value);
+
+    switch (condition.operator) {
+      case ">":
+        return actual > expected;
+      case "<":
+        return actual < expected;
+      case ">=":
+        return actual >= expected;
+      case "<=":
+        return actual <= expected;
+      case "===":
+        return actual === expected;
+      case "!==":
+        return actual !== expected;
+      default:
+        return false;
+    }
+  }
+
+  if (condition.type === "detectCollision") {
+    const from = program.getSprite(condition.from.name, condition.from.source);
+
+    const to = program.getSprite(condition.to.name, condition.to.source);
+
+    if (!from || !to || typeof from.colliding !== "function") {
+      return false;
     }
 
+    return from.colliding(to);
+  }
+
+  return false;
 }
 
+function executeAction(program, action) {
+  const target = action.values.target;
+  const sprite = program.getSprite(target.name, target.source);
+  console.log(sprite)
 
-export default class IfStatement extends Block{
-    constructor(block){
-        super(block);
+  if (!sprite) {
+    return false;
+  }
 
-        this.condition = this.values.condition;
-        this.actions = this.values.actions;
+  switch (action.type) {
+    case "set_velocity": {
+      const { x, y } = action.values.vel;
+
+      sprite.vel.x = Number(x);
+      sprite.vel.y = Number(y);
+      return true;
     }
 
-    validate(program){
-        //validate: check if sprite exist
-       
-        for(const condition of this.condition){
-            //check if target exist
-            if (!program.checkContext('create_sprite', condition.target)){
-                program.addError(this.id, `Wrong condition! Sprite "${condition.target}" has not been created`);
-                return false;
-            }
+    case "set_rotation":
+      sprite.rotation = Number(action.values.rotation);
+      return true;
 
-            //check if condition property is valid
-            if (!ALLOWED_PROPERTIES.includes(condition.property)){
-                program.addError(this.id,`Invalid property "${condition.property}".`);
-                return false;
-            }
+    default:
+      return false;
+  }
+}
 
-            //check if operator is valid
-            if (!ALLOWED_OPERATORS.includes(condition.operator)){
-                program.addError(this.id,`Invalid oeprator "${condition.operator}".`);
-                return false;
-            }
+export default class IfStatement extends Block {
+  constructor(block) {
+    super(block);
 
-            if (!isValidNumber(condition.value)){
-                program.addError(this.id,"Condition value must be a number.");
-                return false;
-            }
-        }
+    this.condition = this.values.condition;
+    this.actions = this.values.actions;
+  }
 
-        for (const action of this.actions){
-            if (!program.checkContext('create_sprite', action.values.name)){
-                program.addError(this.id, `Action could not be acheived! Target Sprite "${action.values.name}" has not been created`);
-                return false;
-            }
+  validate(program) {
+    // Validate conditions.
+    for (const condition of this.condition) {
+      switch (condition.type) {
+        case "detectDistance":
+          if (!spriteExists(program, condition.target)) {
+            program.addError(
+              this.id,
+              `Target sprite "${condition.target?.name}" does not exist.`,
+            );
+            return false;
+          }
 
-            switch(action.type){
-                case "set_velocity":
-                    if (!isValidNumber(action.values.val_x) || !isValidNumber(action.values.val_y)){
-                        program.addError(this.id,"Velocity value must be a number.");
-                        return false;
-                    }
-                    break;
-                default:
-                    program.addError(
-                        this.id,`Unsupported action type "${action.type}".`);
-                    return false;
-            }
-        }
+          if (!ALLOWED_PROPERTIES.includes(condition.property)) {
+            program.addError(
+              this.id,
+              `Invalid property "${condition.property}".`,
+            );
+            return false;
+          }
 
-        return true;
-    
-    };
+          if (!ALLOWED_OPERATORS.includes(condition.operator)) {
+            program.addError(
+              this.id,
+              `Invalid operator "${condition.operator}".`,
+            );
+            return false;
+          }
 
-    execute(program){
-        //execute: get the sprite and update attributes. 
-        const allConditionMet = this.condition.every(condition => checkCondition(program, condition));
+          if (!isValidNumber(condition.value)) {
+            program.addError(this.id, "Condition value must be a number.");
+            return false;
+          }
 
-        //if not all condition met, don't execute
-        if (!allConditionMet){
-            return true;
-        }
+          break;
 
-        
+        case "detectCollision":
+          if (!spriteExists(program, condition.from)) {
+            program.addError(
+              this.id,
+              `Source sprite "${condition.from?.name}" does not exist.`,
+            );
+            return false;
+          }
 
-        return true;
+          if (!spriteExists(program, condition.to)) {
+            program.addError(
+              this.id,
+              `Target sprite "${condition.to?.name}" does not exist.`,
+            );
+            return false;
+          }
 
+          break;
+
+        default:
+          program.addError(
+            this.id,
+            `Unsupported condition type "${condition.type}".`,
+          );
+          return false;
+      }
     }
+
+    // Validate actions.
+    for (const action of this.actions) {
+      const target = action.values.target;
+
+      if (!spriteExists(program, target)) {
+        program.addError(
+          this.id,
+          `Action target sprite "${target?.name}" does not exist.`,
+        );
+        return false;
+      }
+
+      switch (action.type) {
+        case "set_velocity": {
+          const vel = action.values.vel;
+
+          if (!vel || !isValidNumber(vel.x) || !isValidNumber(vel.y)) {
+            program.addError(this.id, "Velocity values must be numbers.");
+            return false;
+          }
+
+          break;
+        }
+
+        case "set_rotation":
+          if (!isValidNumber(action.values.rotation)) {
+            program.addError(this.id, "Rotation value must be a number.");
+            return false;
+          }
+
+          break;
+
+        default:
+          program.addError(
+            this.id,
+            `Unsupported action type "${action.type}".`,
+          );
+          return false;
+      }
+    }
+
+    return true;
+  }
+
+  execute(program) {
+    const allConditionsMet = this.condition.every((condition) =>
+      checkCondition(program, condition),
+    );
+
+    if (!allConditionsMet) {
+      return true;
+    }
+
+    for (const action of this.actions) {
+      if (!executeAction(program, action)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

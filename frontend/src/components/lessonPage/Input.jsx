@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { API_URL } from "../../api";
 
 function Input({page}){
     const [quizInput, setQuizInput] = useState("");
@@ -31,7 +32,7 @@ function Input({page}){
             }
 
             //every attempt +1
-            const attempt = await fetch(`/api/levels/${page.quiz_id}/tryQuiz`, {
+            const attempt = await fetch(`${API_URL}/api/levels/${page.quiz_id}/tryQuiz`, {
                 method: "POST", 
                 headers: {Authorization: `Bearer ${token}`}
             })
@@ -41,7 +42,7 @@ function Input({page}){
 
             //it answer is correct
             if (isCorrect){
-                const completed = await fetch(`/api/levels/${page.quiz_id}/completedQuiz`, {
+                const completed = await fetch(`${API_URL}/api/levels/${page.quiz_id}/completedQuiz`, {
                     method: "POST", 
                     headers: {Authorization: `Bearer ${token}`}
                 })

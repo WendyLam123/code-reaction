@@ -7,6 +7,7 @@ import doorClosed_N from "../assets/objects/doorClosed_N.png";
 import doorClosed_S from "../assets/objects/doorClosed_S.png";
 import arrow_S from "../assets/objects/arrow_S.png";
 import Nav from "../components/Nav";
+import { API_URL } from "../api";
 
 export default function Levels(){
     const [courses, setCourses] = useState([]);
@@ -20,8 +21,8 @@ export default function Levels(){
     useEffect(()=>{
         const getData = async()=>{
             try{
-                const resCourse = await fetch("/api/courses");
-                const resLevels = await fetch("/api/levels");
+                const resCourse = await fetch(`${API_URL}/api/courses`);
+                const resLevels = await fetch(`${API_URL}/api/levels`);
                 //error handler
                 if (!resCourse.ok){
                     throw new Error("Courses data not loaded")

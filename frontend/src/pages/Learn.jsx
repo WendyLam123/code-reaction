@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router";
 import "../styles/Levels.css";
+import { API_URL } from "../api";
 
 const doorClosed_N = "/assets/objects/doorClosed_N.png";
 const arrow_S = "/assets/objects/arrow_S.png";
@@ -15,7 +16,7 @@ export default function Levels(){
     useEffect(()=>{
         const getData = async()=>{
             try{
-                const res = await fetch("/api/courses");
+                const res = await fetch(`${API_URL}/api/courses`);
                 //error handler
                 if (!res.ok){
                     throw new Error("courses data not loaded")

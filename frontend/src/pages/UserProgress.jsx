@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
+import { API_URL } from "../api";
 
 import Nav from "../components/Nav";
 import "../styles/UserProgress.css";
@@ -21,7 +22,7 @@ function UserProgress() {
             }
 
             try {
-                const res = await fetch("/api/userProgress/userData", {
+                const res = await fetch(`${API_URL}/api/userProgress/userData`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

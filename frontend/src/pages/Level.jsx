@@ -8,7 +8,7 @@ import Quiz from "../components/lessonPage/quiz/Quiz";
 import MiniGame from "../components/lessonPage/miniGame/MiniGame";
 import Variable_3 from '../components/lessonPage/miniGame/variable_3'
 import Variable_10 from '../components/lessonPage/miniGame/variable_10'
-
+import { API_URL } from "../api";
 
 const miniGameTable = {
     "2-3": Variable_3,
@@ -46,7 +46,7 @@ function Level() {
             try {
                 setLoading(true);
 
-                const res = await fetch(`/api/courses/${courseId}`);
+                const res = await fetch(`${API_URL}/api/courses/${courseId}`);
 
                 if (!res.ok) {
                     throw new Error("Page data not loaded");

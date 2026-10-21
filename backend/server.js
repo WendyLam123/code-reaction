@@ -4,8 +4,13 @@ import auth from './routes/auth.js';
 import userProgress from './routes/userProgress.js';
 import note from './routes/note.js';
 import courses from './routes/courses.js';
+import cors from "cors";
 
 const app = express();
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL
+}));
 
 app.use(express.json());
 app.use('/api/auth', auth);

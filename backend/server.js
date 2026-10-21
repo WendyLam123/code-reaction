@@ -28,6 +28,10 @@ app.use((err, req, res, next) =>{
     res.status(500).send("Some error happened!");
 })
 
-app.listen(process.env.PORT, ()=>{
-    console.log("Server started on port " + process.env.PORT)
-})
+if (process.env.NODE_ENV !== "production") {
+  app.listen(process.env.PORT || 8080, () => {
+    console.log(`Server started on port ${process.env.PORT || 8080}`);
+  });
+}
+
+export default app;

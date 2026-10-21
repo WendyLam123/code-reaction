@@ -6,17 +6,15 @@ import CreateSprite from '../../src/GameLogic/blocks/CreateSprite.js';
 
 
 const CODE_BLOCKS = [
-
   {
-    id: 1,
-    belong: "global",
-    type: "declaration",
-    order: 1,
-    values: {
-      name: "block",
-    },
+      id: 1,
+      type: "declaration",
+      belong: "global",
+      order: 1,
+      values: { 
+        name: "block" 
+      }
   },
-
   {
     id: 2,
     belong: "setup",
@@ -28,16 +26,6 @@ const CODE_BLOCKS = [
       y: 200,
       width: 50,
       height: 160,
-    },
-  },
-  {
-    id: 3,
-    belong: "setup", 
-    type: "setVelocity",
-    values: {
-      name: "block",
-      vx: 3,
-      vy: 0,
     },
   }
 ];
@@ -56,29 +44,28 @@ const BLOCK = {
     },
 }
 
-let program;
+let p, program;
 
 beforeEach(()=>{
-  const p = createMockP();
+  p = createMockP();
   program = new Program(p,CODE_BLOCKS);
 })
 
 describe('add context', ()=>{
   test('add declared variable', ()=>{
     program.addContext('declare_variable', "ball");
-    expect(program.declaredVariables.has("ball"));
+    expect(program.validationContext.declaredVariables).toContain("ball");
   })
 
-  test('add sprite', ()=>{
-    const block = new CreateSprite(BLOCK);
-    program.addContext('create_sprite', "block", block);
-    expect(program.declaredVariables.has("ball", block));
+  test('validate if sprite is added to schedule', ()=>{
+    program.addContext('create_sprite', "block");
+    expect(program.validationContext.scheduledSprites).toContain("block");
   })
 })
 
 test('add error message to error map', ()=>{
   program.addError("1", "Test Message");
-  expect(program.errors.has("1"));
+  expect(program.errors.has("1")).toBe(true);
 })
 
 describe('check context', ()=>{
@@ -103,7 +90,7 @@ describe('check context', ()=>{
   })
 
   test('unknown context', ()=>{
-    expect(()=>program.checkContext('unknown').toThrow())
+    expect(()=>program.checkContext('unknown')).toThrow();
   })
 })
 
@@ -113,11 +100,12 @@ test('create createSprite instance', ()=>{
 })
 
 
-test('compiles a CreateSprite instance into setup', () => {
+test('compiles a CreateSprite instance', () => {
   program.blocks = [BLOCK];
   program.addContext('declare_variable', 'block');
 
-  program.compileBlocks();
+  program.compileBlocks()
+  console.log(program.errors)
 
   expect(program.executableBlock.setup).toHaveLength(1);
   expect(program.executableBlock.setup[0]).toBeInstanceOf(CreateSprite);
@@ -132,3 +120,81 @@ test('runs setup and creates a sprite', () => {
 
   expect(program.createdSprites.has('block')).toBe(true);
 });
+
+test('reset program', ()=>{
+  program.reset();
+  expect(program.errors.size).toBe(0);
+
+  expect(program.executableBlock.global).toHaveLength(0);
+  expect(program.executableBlock.setup).toHaveLength(0);
+  expect(program.executableBlock.update).toHaveLength(0);
+  expect(program.executableBlock.draw).toHaveLength(0);
+
+  expect(program.validationContext.declaredVariables.size).toBe(0);
+  expect(program.validationContext.scheduledSprites.size).toBe(0);
+
+
+})
+
+describe('Program integration', ()=>{
+
+  test('compiles declaration and sprite blocks', ()=>{
+    const success = program.compileBlocks();
+    expect(success).toBe(true);
+    expect(program.errors.size).toBe(0);
+    expect(program.executableBlock.global).toHaveLength(1);
+    expect(program.executableBlock.setup).toHaveLength(1);
+  })
+
+  test('setup created a sprite', ()=>{
+    expect(program.compileBlocks()).toBe(true);
+    expect(program.setup()).toBe(true);
+    expect(p.Sprite).toHaveBeenCalledTimes(1);
+    expect(program.createdSprites.has('block')).toBe(true);
+  })
+
+  test('does not create a sprite if validation fail', ()=>{
+    const invalidBlocks = [
+    {
+      id: 2,
+      belong: "setup",
+      type: "create_sprite",
+      order: 1,
+      values: {
+        name: "block",
+        x: 100,
+        y: 200,
+        width: 50,
+        height: 160,
+      },
+    },
+    {
+        id: 1,
+        type: "declaration",
+        belong: "global",
+        order: 2,
+        values: { 
+          name: "block" 
+        }
+    }
+  ];
+
+    program.blocks = invalidBlocks;
+    expect(program.compileBlocks()).toBe(false);
+    program.setup();
+
+    expect(p.Sprite).not.toHaveBeenCalled();
+    expect(program.errors.has(2)).toBe(true);
+    console.log(program.errors);
+    
+  })
+})
+
+describe('getCreatedSprite', ()=>{
+  test('get a existed sprite', ()=>{
+    let sprite = new CreateSprite(BLOCK);
+    program.createdSprites.set(BLOCK.name, sprite)
+    const actual = program.getSprite(BLOCK.name, 'userBlock');
+    expect(actual).toBeInstanceOf(CreateSprite);
+  })
+})

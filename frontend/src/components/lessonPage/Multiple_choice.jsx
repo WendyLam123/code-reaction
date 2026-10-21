@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { API_URL } from "../../api";
 
     function Multiple_choice({page}){
         const navigate = useNavigate();
@@ -22,7 +23,7 @@ import { useNavigate } from "react-router";
                     return;
                 }
 
-                const updateAttempt = await fetch(`/api/levels/${page.quiz_id}/tryQuiz`, {
+                const updateAttempt = await fetch(`${API_URL}/api/levels/${page.quiz_id}/tryQuiz`, {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`
@@ -36,7 +37,7 @@ import { useNavigate } from "react-router";
                 if (answer.is_correct){
                     setCompleted(true);
 
-                    const updateCompleted = await fetch(`/api/levels/${page.quiz_id}/completedQuiz`, {
+                    const updateCompleted = await fetch(`${API_URL}/api/levels/${page.quiz_id}/completedQuiz`, {
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${token})}`

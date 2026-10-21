@@ -17,35 +17,49 @@ const BLOCK = {
     },
 }
 
+const PROGRAM_BLOCK = [{
+    id: 2,
+    belong: "setup",
+    type: "create_sprite",
+    order: 2,
+    values: {
+      name: "block",
+      x: 100,
+      y: 200,
+      width: 50,
+      height: 160,
+    },
+}]
+
 let p, program, sprite;
 
 beforeEach(()=>{
     p = createMockP();
-    program = new Program(p,BLOCK);
+    program = new Program(p,PROGRAM_BLOCK);
     sprite = new CreateSprite(BLOCK);
 })
 
 
 test('Create a Sprite instance successfully', () =>{
-    program.declaredVariables.set(BLOCK.values.name, true);
+    program.validationContext.declaredVariables.add(BLOCK.values.name);
 
-    sprite.validate(program);
+    expect(sprite.validate(program)).toBe(true);
     sprite.execute(program);
     expect(program.p.Sprite).toHaveBeenCalledTimes(1);
     expect(program.createdSprites.has(BLOCK.values.name)).toBe(true);
-    expect(program.errors).toHaveLength(0);
+    expect(program.errors.size).toBe(0);
 
 })
 
 test('Sprite not declared before create', () =>{
-    sprite.validate(program);
-    sprite.execute(program);
+    expect(sprite.validate(program)).toBe(false);
     expect(program.errors.has(BLOCK.id)).toBe(true);
+    expect(program.p.Sprite).not.toHaveBeenCalled();
 })
 
 test('Sprite created before', () =>{
     program.createdSprites.set(BLOCK.values.name, true);
-    sprite.validate(program);
-    sprite.execute(program);
+    expect(sprite.validate(program)).toBe(false);
+    expect(program.p.Sprite).not.toHaveBeenCalled();
     expect(program.errors.has(BLOCK.id)).toBe(true);
 })

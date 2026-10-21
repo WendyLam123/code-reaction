@@ -25,6 +25,7 @@ export default function App(){
         <Route path="Note" element={<Note/>}/>
         <Route path="Register" element={<Register/>}/>
         <Route path="Login" element={<Login/>}/>
+
       </Routes>
     </BrowserRouter>
     )

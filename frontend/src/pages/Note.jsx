@@ -6,6 +6,8 @@ import Sidebar from "../components/notes/Sidebar";
 import Main from "../components/notes/Main";
 import Nav from "../components/Nav";
 import { useAuth } from "../contexts/AuthContext";
+import { API_URL } from "../api";
+
 
 function Note(){
     const [notes, setNotes] = useState([]);
@@ -26,7 +28,7 @@ function Note(){
             }
 
             try{
-                const res = await fetch("/api/note/", {
+                const res = await fetch(`${API_URL}/api/note/`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -58,13 +60,7 @@ function Note(){
 
     const saveNote_database = async (note) =>{
         try{
-<<<<<<< HEAD
-            //auth
-            const token = localStorage.getItem('token');
-            if (!token){
-=======
            if (!isLoggedIn){
->>>>>>> ed41d36 (Added basic program logic and test cases)
                 navigate('/login');
                 return;
             }
@@ -73,7 +69,7 @@ function Note(){
             if (note.id){
                 //case 2
                 //update existed note with new content
-                const res = await fetch(`/api/note/${note.id}`, {
+                const res = await fetch(`${API_URL}/api/note/${note.id}`, {
                     method: "PUT", 
                     headers: {
                         "Content-Type": "application/json",
@@ -103,7 +99,7 @@ function Note(){
                 //have tempId but no actual id
                 //if no existing note, create new note to the Notes database
                 //auto generate a note id
-                const res = await fetch("/api/note/", {
+                const res = await fetch(`${API_URL}/api/note/`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -161,7 +157,7 @@ function Note(){
         try{
             //if note exists in the database (not temp note)
             if (note.id){
-                const res = await fetch(`/api/note/${note.id}`, {
+                const res = await fetch(`${API_URL}/api/note/${note.id}`, {
                     method: "DELETE", 
                     headers: {"Authorization": `Bearer ${token}`}
                 });

@@ -139,6 +139,7 @@ ul{
   z-index: 3;
   border-radius: 8px 0 0 8px;
   border-bottom: 5px solid var(--deep_brown);
+  white-space: pre-wrap;
 }
 
 .toolBoxContainer{
@@ -225,9 +226,10 @@ ul{
 
 .workSpaceRow{
     display: flex;
-    align-items: center;
     gap: 5px;
     width: 100%;
+    white-space: pre-wrap;
+    text-align: start;
 }
 
 .errorContainer{

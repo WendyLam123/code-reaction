@@ -41,6 +41,7 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors ,setWin, reset}) {
           let crateCollider;
           let doorCollider;
           let arrowCollider;
+          let stairCollider;
 
           let doorOpened = false;
 
@@ -74,7 +75,7 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors ,setWin, reset}) {
             stairs.collider = "none";
             stairs.layer = 1;
 
-            const stairCollider = new p.Sprite(100, 450, 20, 160);
+            stairCollider = new p.Sprite(100, 450, 20, 160);
             stairCollider.rotation = -45;
             stairCollider.collider = "static";
             stairCollider.visible = false;
@@ -131,6 +132,9 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors ,setWin, reset}) {
             alien.layer = 0;
 
             // Compile only after the canvas and scene are ready
+            program.registerGameObject('crateCollider', crateCollider);
+
+            console.log(program.gameObjects)
             const isValid = program.compileBlocks();
 
             if (isValid) {
@@ -165,11 +169,13 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors ,setWin, reset}) {
 
             block.rotationSpeed = 0;
 
+            /*
             if (block.colliding(crateCollider)) {
               block.vel.x = 3;
               block.vel.y = -3;
               block.rotation = 0;
             }
+            */
 
             if (block.colliding(arrowCollider)) {
               block.vel.x = 3;

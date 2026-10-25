@@ -5,7 +5,7 @@ let db;
 
 const connectToDatabase = () => {
   if (!db) {
-    db = mysql.createPool({
+    const config = {
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       user: process.env.DB_USER,
@@ -18,7 +18,13 @@ const connectToDatabase = () => {
       waitForConnections: true,
       connectionLimit: 5,
       queueLimit: 0
-    });
+    };
+
+    if (process.env.DB_CA_CERT) {
+      config.ssl = { ca: process.env.DB_CA_CERT };
+    }
+
+    db = mysql.createPool(config);
   }
 
   return db;

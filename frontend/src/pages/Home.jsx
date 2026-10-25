@@ -54,7 +54,7 @@ function Home() {
               Login
             </Link>
 
-            <Link to="/levels" className="gameButton">
+            <Link to="/Learn" className="gameButton">
               Continue as a gust
             </Link>
             </>

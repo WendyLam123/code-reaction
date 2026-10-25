@@ -23,7 +23,7 @@ import { API_URL } from "../../api";
                     return;
                 }
 
-                const updateAttempt = await fetch(`${API_URL}/api/levels/${page.quiz_id}/tryQuiz`, {
+                const updateAttempt = await fetch(`${API_URL}/api/courses/${page.quiz_id}/tryQuiz`, {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`
@@ -37,7 +37,7 @@ import { API_URL } from "../../api";
                 if (answer.is_correct){
                     setCompleted(true);
 
-                    const updateCompleted = await fetch(`${API_URL}/api/levels/${page.quiz_id}/completedQuiz`, {
+                    const updateCompleted = await fetch(`${API_URL}/api/courses/${page.quiz_id}/completedQuiz`, {
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${token})}`

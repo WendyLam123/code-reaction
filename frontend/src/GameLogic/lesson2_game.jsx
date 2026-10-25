@@ -219,7 +219,7 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
         if (!engine || !program) return;
 
         // Step physics first; update blocks can then inspect this frame's contacts.
-        Matter.Engine.update(engine, Math.min(p.deltaTime || 16.67, 33.3));
+        Matter.Engine.update(engine, Math.min(p.deltaTime || 16.666, 16.666));
         if (program.isRunning) {
           program.update();
           program.draw();

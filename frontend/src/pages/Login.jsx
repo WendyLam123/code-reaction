@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import {Link, useNavigate} from 'react-router';
 import { useAuth } from "../contexts/AuthContext";
 import '../styles/Login_Signup.css';
@@ -24,6 +24,8 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(""); //reset page error message
+
         try{
             const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: "POST", 
@@ -34,23 +36,19 @@ const Login = () => {
             const data = await response.json();
 
             if (!response.ok){
-                throw new Error(data.message);
+                throw new Error("Failed to login");
+            }
+            if (!data.token){
+                throw new Error("No token");
             }
 
-            if (response.status === 201){
-                //store token to localstorage
-                login(data.token);
-                navigate("/")
-            }
-            
+            login(data.token);
+            navigate("/");
+
         } catch(error){
             setError(error.message);
         }
         
-    }
-
-    if (error){
-        return <p>{error}</p>;
     }
 
     return (
@@ -58,6 +56,7 @@ const Login = () => {
             <div className="login_signup_container">
                 <h1>Welcome Back!</h1>
                 <form onSubmit={handleSubmit} className="login_signup_form">
+                    {error && <p>{error}</p>}
 
                     <input type="email" id="email" required placeholder="Email"
                         name="email"
@@ -70,6 +69,7 @@ const Login = () => {
                     />
                     <button type="submit">Login</button>
                 </form>
+                
                 <div>
                     <p>Don't Have an Account? <br /><Link to="/Register" className="form_link">Register here</Link></p>
                 </div>

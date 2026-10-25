@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState} from "react";
 import {Link, useNavigate} from 'react-router';
 import '../styles/Login_Signup.css';
 import { API_URL } from '../api';
 
 const Register = () => {
-
     const [values, setValues] = useState({
         username: '',
         email: '',
@@ -17,11 +16,13 @@ const Register = () => {
     //update state when input changes
     const handleChange = (e) => {
         const {name, value} = e.target;
-        setValues({...values, [name]: value});
+        setValues({...prevousValues, [name]: value});
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(""); //reset page error message
+
         try{
             const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: "POST", 
@@ -29,15 +30,13 @@ const Register = () => {
                 body: JSON.stringify(values),
             });
 
-            const res = await response.json();
+            const data = await response.json();
 
             if (!response.ok){
-                throw new Error(res.message);
+                throw new Error("Registration failed");
             }
 
-            if (response.status === 201){
-                navigate("/Login")
-            }
+            navigate("/Login");
             
         } catch(error){
             setError(error.message);
@@ -45,15 +44,13 @@ const Register = () => {
         
     }
 
-    if (error){
-        return <p>{error}</p>;
-    }
-
     return (
         <main className="login_signup_main">
             <div className="login_signup_container">
                 <h1>Create Account</h1>
                 <form onSubmit={handleSubmit} className="login_signup_form">
+                    {error && <p>{error}</p>}
+
                     <input type="text" id="username" required placeholder="Username"
                         name="username"
                         onChange={handleChange}

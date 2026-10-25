@@ -1,5 +1,4 @@
 import express from "express";
-import connectToDatabase from "./db.js";
 import auth from './routes/auth.js';
 import userProgress from './routes/userProgress.js';
 import note from './routes/note.js';

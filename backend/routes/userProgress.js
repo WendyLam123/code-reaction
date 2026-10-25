@@ -1,31 +1,29 @@
-import {verifyToken} from "./auth.js";
-import express from 'express';
-import connectToDatabase from '../db.js';
+import { verifyToken } from "./auth.js";
+import express from "express";
+import connectToDatabase from "../db.js";
 
 const router = express.Router();
 
 const db = connectToDatabase();
 
-router.get("/userData", verifyToken, (req, res, next)=>{
-    let sql = `
-        SELECT username, email FROM users
-        WHERE user_id = ?
-    `;
+router.get("/userData", verifyToken, async (req, res, next) => {
+  const sql = `
+    SELECT username, email FROM users
+    WHERE user_id = ?
+  `;
 
-    db.query(sql, [req.userId], (err, rows)=>{
-        if (err){
-            return next(err);
-        };
+  try {
+    const [rows] = await db.query(sql, [req.userId]);
 
-        //check if user still exist, not deleted after got the token
-        if (rows.length === 0) {
-            return res.status(404).json({
-                message: "User not found"
-            });
-        }
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-        return res.status(200).json(rows[0]);
-    })
-})
+    //get user from [{user}]
+    return res.status(200).json(rows[0]);
+  } catch (err) {
+    return next(err);
+  }
+});
 
 export default router;

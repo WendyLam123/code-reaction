@@ -1,5 +1,4 @@
 import "../styles/Home.css";
-import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router";
 import {useAuth} from "../contexts/AuthContext";
 
@@ -10,7 +9,7 @@ const shipYellow_manned = "/assets/characters/shipYellow_manned.png";
 
 
 function Home() {
-  const {isLoggedIn, logout} = useAuth();
+  const {isLoggedIn} = useAuth();
 
   return (
     <div className="homePage">
@@ -55,7 +54,7 @@ function Home() {
             </Link>
 
             <Link to="/Learn" className="gameButton">
-              Continue as a gust
+              Continue as a guest
             </Link>
             </>
           }

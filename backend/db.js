@@ -1,4 +1,5 @@
-import mysql from "mysql2";
+import mysql from "mysql2/promise";
+import fs from "node:fs";
 
 let db;
 
@@ -11,7 +12,8 @@ const connectToDatabase = () => {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       ssl: {
-        ca: process.env.DB_CA_CERT
+        ca: fs.readFileSync(process.env.DB_CA_CERT_PATH),
+        rejectUnauthorized: true
       },
       waitForConnections: true,
       connectionLimit: 5,

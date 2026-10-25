@@ -13,8 +13,6 @@ app.use('/api/userProgress', userProgress);
 app.use('/api/note', note);
 app.use('/api/courses', courses);
 
-let db = connectToDatabase();
-
 //404 hander
 app.use((req, res) =>{
     res.status(404).json({

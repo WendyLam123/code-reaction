@@ -1,83 +1,65 @@
-import express from 'express';
-import connectToDatabase from '../db.js';
-import {verifyToken} from './auth.js';
+import express from "express";
+import connectToDatabase from "../db.js";
+import { verifyToken } from "./auth.js";
 
 const router = express.Router();
 
 const db = connectToDatabase();
 
-
 //Learn Page
 //public
 
-router.get('/', (req, res, next) => {
+router.get("/", async (req, res, next) => {
+  const sql = `
+    SELECT
+      courses.id AS course_id,
+      courses.title AS course_title,
+      levels.id AS level_id,
+      levels.level_page_order AS page_order,
+      levels.title AS level_title
+    FROM courses
+    LEFT JOIN levels
+      ON courses.id = levels.course_id
+    ORDER BY courses.id, levels.level_page_order;
+  `;
 
-    const sql = `
-        SELECT
-            courses.id AS course_id,
-            courses.title AS course_title,
+  try {
+    const [data] = await db.query(sql);
+    const coursesMap = new Map();
 
-            levels.id AS level_id,
-            levels.level_page_order AS page_order,
-            levels.title AS level_title
-
-        FROM courses
-
-        LEFT JOIN levels
-            ON courses.id = levels.course_id
-
-        ORDER BY courses.id, levels.level_page_order;
-    `;
-
-
-    db.query(sql, (err, data) => {
-
-        if (err) {
-            return next(err);
-        }
-
-
-        const coursesMap = new Map();
-
-
-        data.forEach((row) => {
-
-            if (!coursesMap.has(row.course_id)) {
-
-                coursesMap.set(row.course_id, {
-                    id: row.course_id,
-                    title: row.course_title,
-                    levels: []
-                });
-
-            }
-
-
-            if (row.level_id !== null) {
-
-                coursesMap.get(row.course_id).levels.push({
-                    id: row.level_id,
-                    page_order: row.page_order,
-                    title: row.level_title
-                });
-
-            }
-
+    data.forEach((row) => {
+      //use course_id as temp coursesMap key
+      //if course haven't put in the map, add it
+      if (!coursesMap.has(row.course_id)) {
+        coursesMap.set(row.course_id, {
+          id: row.course_id,
+          title: row.course_title,
+          levels: [],
         });
+      }
 
-
-        const courses = [...coursesMap.values()];
-
-        return res.json(courses);
-
+      //if course have put in the map, and have other related into, add the new info to the existed course
+      if (row.level_id !== null) {
+        coursesMap.get(row.course_id).levels.push({
+          id: row.level_id,
+          page_order: row.page_order,
+          title: row.level_title,
+        });
+      }
     });
 
+    //remove the temp key
+    //return the organized course data: course_id, course title, levelId, level_page_order, level_title
+    return res.json([...coursesMap.values()]);
+  } catch (err) {
+    return next(err);
+  }
 });
 
-router.get('/:courseId', (req, res, next) => {
-    const { courseId } = req.params;
+router.get("/:courseId", async (req, res, next) => {
+  const { courseId } = req.params;
 
-    const sql = `
+  const sql = `
         SELECT 
             levelPages.id,
             levelPages.content,
@@ -120,129 +102,114 @@ router.get('/:courseId', (req, res, next) => {
         ORDER BY levelPages.page_order ASC;
     `;
 
-    db.query(sql, [courseId], (err, data) => {
+  try {
+    const [data] = await db.query(sql, [courseId]);
+    const pagesMap = new Map();
 
-        if (err) {
-            return next(err);
-        }
-
-        const pagesMap = new Map();
-
-        data.forEach((row) => {
-
-            // Create page
-            if (!pagesMap.has(row.id)) {
-
-                pagesMap.set(row.id, {
-                    id: row.id,
-                    content: row.content,
-                    page_order: row.page_order,
-                    page_type: row.page_type,
-                    course_title: row.course_title,
-                    quiz: null,
-                    game: null
-                });
-
-            }
-
-            const page = pagesMap.get(row.id);
-
-
-            // Create quiz
-            if (row.quiz_id !== null) {
-
-                if (!page.quiz) {
-
-                    page.quiz = {
-                        id: row.quiz_id,
-                        question: row.question,
-                        question_type: row.question_type,
-                        answers: []
-                    };
-
-                }
-
-            }
-
-
-            // Add answer
-            if (row.answer_id !== null) {
-
-                page.quiz.answers.push({
-                    id: row.answer_id,
-                    answer: row.answer,
-                    is_correct: row.is_correct
-                });
-
-            }
-
-            // Create Game
-            if (row.game_id !== null){
-                if (!page.game){
-                    page.game = {
-                        id: row.game_id,
-                        title: row.game_title,
-                        instructions: row.game_instructions,
-                        tips: row.game_tips, 
-                        code_blocks: row.game_code_blocks,
-                        answers: row.game_answers
-                    }
-                }
-            }
-
+    data.forEach((row) => {
+      // Create page
+      if (!pagesMap.has(row.id)) {
+        pagesMap.set(row.id, {
+          id: row.id,
+          content: row.content,
+          page_order: row.page_order,
+          page_type: row.page_type,
+          course_title: row.course_title,
+          quiz: null,
+          game: null,
         });
+      }
 
+      const page = pagesMap.get(row.id);
 
-        const pages = [...pagesMap.values()];
+      // Create quiz
+      if (row.quiz_id !== null) {
+        if (!page.quiz) {
+          page.quiz = {
+            id: row.quiz_id,
+            question: row.question,
+            question_type: row.question_type,
+            answers: [],
+          };
+        }
+      }
 
-        return res.json(pages);
+      // Add answer
+      if (
+        row.answer_id !== null &&
+        page.quiz &&
+        !page.quiz.answers.some((answer) => answer.id === row.answer_id)
+      ) {
+        page.quiz.answers.push({
+          id: row.answer_id,
+          answer: row.answer,
+          is_correct: row.is_correct,
+        });
+      }
 
+      // Create Game
+      if (row.game_id !== null) {
+        if (!page.game) {
+          page.game = {
+            id: row.game_id,
+            title: row.game_title,
+            instructions: row.game_instructions,
+            tips: row.game_tips,
+            code_blocks: row.game_code_blocks,
+            answers: row.game_answers,
+          };
+        }
+      }
     });
+
+    const pages = [...pagesMap.values()];
+
+    return res.json(pages);
+  } catch (err) {
+    return next(err);
+  }
 });
 
 //private, require login
-router.post('/:id/tryQuiz', verifyToken, (req, res, next)=>{
-    const id = req.params.id;
-    //if quiz is completed, don't update attempt
-    const sql = `
+router.post("/:id/tryQuiz", verifyToken, async (req, res, next) => {
+  const id = req.params.id;
+
+  //if quiz is completed, don't update attempt
+  //
+  const sql = `
         INSERT INTO userProgress (user_id, page_id, attempts)
         VALUES(?, ?, 1)
 
         ON DUPLICATE KEY UPDATE
-        attempts = IF(completed = False, attempts + 1, attempts);
-    `
+        attempts = IF(completed = 0, attempts + 1, attempts);
+    `;
 
-    db.query(sql, [req.userId, id], (err, data)=>{
-        if (err){
-            return next(err);
-        }
+  try {
+    const [data] = await db.query(sql, [req.userId, id]);
+    return res.json(data);
+  } catch (err) {
+    return next(err);
+  }
+});
 
-        return res.json(data);
+router.post("/:id/completedQuiz", verifyToken, async (req, res, next) => {
+  const id = req.params.id;
 
-    })
-})
-
-router.post('/:id/completedQuiz', verifyToken, (req, res, next)=>{
-    const id = req.params.id;
-
-
-    const sql = `
-        INSERT INTO userProgress (user_id, page_id, attempts, completed, completed_at)
-        VALUES(?, ?, 1, true, NOW())
-
+  const sql = `
+        INSERT INTO userProgress
+            (user_id, page_id, attempts, completed, completed_at)
+        VALUES (?, ?, 1, true, NOW())
         ON DUPLICATE KEY UPDATE
             completed = true,
             completed_at = NOW();
-    `
+    `;
 
-    db.query(sql, [req.userId, id], (err, data)=>{
-        if (err){
-            return next(err);
-        }
-
-        return res.json(data);
-
-    })
-})
+  try {
+    const [data] = await db.query(sql, [req.userId, id]);
+    return res.json(data);
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default router;

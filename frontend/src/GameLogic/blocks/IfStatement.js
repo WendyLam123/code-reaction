@@ -1,3 +1,4 @@
+import Matter from "matter-js";
 import Block from "./Block.js";
 
 const ALLOWED_PROPERTIES = ["x", "y", "vel.x", "vel.y"];
@@ -130,16 +131,16 @@ function checkCondition(program, condition) {
 
     switch (condition.property) {
       case "x":
-        actual = sprite.x;
+        actual = sprite.position.x;
         break;
       case "y":
-        actual = sprite.y;
+        actual = sprite.position.y;
         break;
       case "vel.x":
-        actual = sprite.vel.x;
+        actual = sprite.velocity.x;
         break;
       case "vel.y":
-        actual = sprite.vel.y;
+        actual = sprite.velocity.y;
         break;
       default:
         return false;
@@ -170,11 +171,11 @@ function checkCondition(program, condition) {
 
     const to = program.getSprite(condition.to.name, condition.to.source);
 
-    if (!from || !to || typeof from.colliding !== "function") {
+    if (!from?.position || !to?.position) {
       return false;
     }
 
-    return from.colliding(to);
+    return Matter.Query.collides(from, [to]).length > 0;
   }
 
   return false;
@@ -182,10 +183,9 @@ function checkCondition(program, condition) {
 
 function executeAction(program, action) {
   const target = action.values.target;
-  const sprite = program.getSprite(target.name, target.source);
-  console.log(sprite)
+  const body = program.getSprite(target.name, target.source);
 
-  if (!sprite) {
+  if (!body?.position) {
     return false;
   }
 
@@ -193,13 +193,19 @@ function executeAction(program, action) {
     case "set_velocity": {
       const { x, y } = action.values.vel;
 
-      sprite.vel.x = Number(x);
-      sprite.vel.y = Number(y);
+      if (!body.velocity) return false;
+      Matter.Body.setVelocity(body, {
+        x: Number(x),
+        y: Number(y),
+      });
       return true;
     }
 
     case "set_rotation":
-      sprite.rotation = Number(action.values.rotation);
+      Matter.Body.setAngle(
+        body,
+        (Number(action.values.rotation) * Math.PI) / 180,
+      );
       return true;
 
     default:

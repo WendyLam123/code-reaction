@@ -25,75 +25,76 @@ export default function Game({ page, changePage, goToNextCourse }) {
         content: block
     }));
     */
-  const codeBlocksFormatted = [
-    {
-      id: 1,
-      type: "declaration",
-      belong: "global",
-      code: "let block;",
-      order: 1,
-      values: {
-        name: "block",
-      },
+const codeBlocksFormatted = [
+  {
+    id: 1,
+    type: "declaration",
+    belong: "global",
+    code: "let block;",
+    order: 1,
+    values: {
+      name: "block",
     },
-    {
-      id: 2,
-      type: "create_sprite",
-      belong: "setup",
-      code: "block = new Sprite(100, 200, 50, 160);",
-      order: 2,
-      values: {
-        name: "block",
-        x: 100,
-        y: 200,
-        width: 50,
-        height: 160,
-      },
-        },
+  },
+  {
+    id: 2,
+    type: "create_sprite",
+    belong: "setup",
+    code: "block = createSprite(100, 200, 100, 100);",
+    order: 2,
+    values: {
+      name: "block",
+      x: 100,
+      y: 200,
+      width: 50,
+      height: 160,
+    },
+  },
+  {
+    id: 3,
+    type: "if",
+    belong: "update",
+    code: "if (touching(block, crateCollider)) {\nsetVelocity(block, 3, -3);\nsetRotation(block, 0);}",
+    order: 3,
+    values: {
+      condition: [
         {
-        id: 3,
-        belong: "update",
-        type: "if",
-        code: "if (block.colliding(crate)) {\n  block.vel.x = -3;\n  block.vel.y = -3;\n  alien.rotation = 0;\n}",
-        values: {
-        condition: [
-          {
-            type: "detectCollision",
-            from: {
+          type: "detectCollision",
+          from: {
+            name: "block",
+            source: "userBlock",
+          },
+          to: {
+            name: "crateCollider",
+            source: "gameBlock",
+          },
+        },
+      ],
+      actions: [
+        {
+          type: "set_velocity",
+          values: {
+            target: {
               name: "block",
               source: "userBlock",
             },
-            to: {
-              name: "crateCollider",
-              source: "gameBlock",
-            },
+            vel: { x: 3, y: -3 },
           },
-        ],
-        actions: [
-          {
-            type: "set_velocity",
-            values: {
-              target: {
-                name: "block",
-                source: "userBlock",
-              },
-              vel: { x: 3, y: -3 },
+        },
+        {
+          type: "set_rotation",
+          values: {
+            target: {
+              name: "block",
+              source: "userBlock",
             },
+            rotation: 0,
           },
-          {
-            type: "set_rotation",
-            values: {
-              target: {
-                name: "block",
-                source: "userBlock",
-              },
-              rotation: 0,
-            },
-          },
-        ],
-      },
+        },
+      ],
     },
-  ];
+  },
+];
 
   const [items, setItems] = useState({
     ToolBox: [...codeBlocksFormatted],

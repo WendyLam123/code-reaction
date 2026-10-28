@@ -54,6 +54,7 @@ function getOpaqueImageBounds(image) {
   let right = -1;
   let bottom = -1;
 
+  //Get the non-opaque boundary
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const alpha = pixels[(y * width + x) * 4 + 3];
@@ -147,10 +148,13 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
         canvas.elt.style.height = "auto";
         canvas.elt.style.maxWidth = "100%";
         canvas.elt.style.aspectRatio = `${GAME_WIDTH} / ${GAME_HEIGHT}`;
+
+        //draw the user created block
         blockImageBounds = getOpaqueImageBounds(blockimg);
         engine = Matter.Engine.create();
         engine.gravity.y = 0.65;
         engine.gravity.scale = 0.001;
+        
         const blocksWithSquarePlayer = CODE_BLOCKS.map((block) => {
           if (
             block.type === "create_sprite" &&
@@ -164,6 +168,7 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
           return block;
         });
 
+        //Create and Reset the program
         program = new Program(p, blocksWithSquarePlayer, engine);
         program.reset();
 
@@ -203,12 +208,14 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
           scale: 1,
         };
 
+        //Add game object that included in user blocks to the program for validation
         program.registerGameObject("crateCollider", crateCollider);
         program.registerGameObject("doorwayCollider", doorwayCollider);
         const isValid = program.compileBlocks();
         if (isValid) {
           program.setup();
         } else {
+          //Add error message to pass to frontend and display error messages
           setErrors?.(new Map(program.errors));
         }
       };
@@ -218,7 +225,7 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
         if (!engine || !program) return;
 
         // Step physics first; update blocks can then inspect this frame's contacts.
-        Matter.Engine.update(engine, Math.min(p.deltaTime || 16.666, 16.666));
+        Matter.Engine.update(engine, Math.min(p.deltaTime || 16.667, 16.667));
         if (program.isRunning) {
           program.update();
           program.draw();
@@ -264,9 +271,12 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
               height,
               scale: 1,
             };
+
+            //Setup up block interaction with other game object
             const isPlayerBlock = sprite.name === "block";
             const visualScale = 1;
             const colliderScale = isPlayerBlock ? 0.75 : 1;
+            
             sprite.renderInfo.scale = visualScale;
             if (colliderScale !== 1) {
               Matter.Body.scale(sprite, colliderScale, colliderScale);

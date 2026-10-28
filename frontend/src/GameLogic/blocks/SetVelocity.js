@@ -10,6 +10,7 @@ export default class SetVelocity extends Block {
   }
 
   validate(program) {
+    //Check inputed velocity values, need to be finite number
     if (!Number.isFinite(this.val_x) || !Number.isFinite(this.val_y)) {
       const invalidValue = !Number.isFinite(this.val_x)
         ? "x velocity"
@@ -22,6 +23,7 @@ export default class SetVelocity extends Block {
       return false;
     }
 
+    //Check if sprite existed in the context
     if (!program.checkContext("create_sprite", this.name)) {
       program.addError(
         this.id,
@@ -33,6 +35,7 @@ export default class SetVelocity extends Block {
     return true;
   }
 
+  //Execute the program and update velocity
   execute(program) {
     const body = program.createdSprites.get(this.name);
 

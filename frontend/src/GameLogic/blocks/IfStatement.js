@@ -103,6 +103,7 @@ function isValidNumber(value) {
 }
 
 function spriteExists(program, target) {
+  //Need to know the name of the target and if it's user create sprite or game object
   if (!target?.name || !target?.source) {
     return false;
   }
@@ -175,6 +176,7 @@ function checkCondition(program, condition) {
       return false;
     }
 
+    //Need to use Matter to detect collision between two sprites
     return Matter.Query.collides(from, [to]).length > 0;
   }
 
@@ -185,6 +187,7 @@ function executeAction(program, action) {
   const target = action.values.target;
   const body = program.getSprite(target.name, target.source);
 
+  //Get sprite's body initial position (x, y)
   if (!body?.position) {
     return false;
   }
@@ -334,6 +337,7 @@ export default class IfStatement extends Block {
       checkCondition(program, condition),
     );
 
+    //If condition return false, don't need to change anything, if block finish execution
     if (!allConditionsMet) {
       return true;
     }

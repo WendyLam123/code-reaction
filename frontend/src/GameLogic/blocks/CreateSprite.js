@@ -28,6 +28,7 @@ export default class CreateSprite extends Block {
       return false;
     }
 
+    //If any values are not number, return false and add error message
     if (![this.x, this.y, this.width, this.height].every(Number.isFinite)) {
       program.addError(
         this.id,

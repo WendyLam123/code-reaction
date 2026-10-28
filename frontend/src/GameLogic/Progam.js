@@ -29,10 +29,12 @@ export default class Program {
     };
   }
 
+  //Allow validator to access gameObjects. 
   registerGameObject(name, body) {
     this.gameObjects.set(name, body);
   }
 
+  //Add context for validator to track which variables are declared, which sprites are created. 
   addContext(contextType, context) {
     switch (contextType) {
       case "create_sprite":
@@ -46,10 +48,12 @@ export default class Program {
     }
   }
 
+  //Add error message
   addError(blockId, errorMessage) {
     this.errors.set(blockId, errorMessage);
   }
 
+  //Check conext for validator to track which variables are declared, which sprites are created.
   checkContext(contextType, contextKey) {
     switch (contextType) {
       case "create_sprite":
@@ -61,6 +65,8 @@ export default class Program {
     }
   }
 
+  //Execution
+  //Create Runable Code Blocks. 
   createBlock(rawBlock) {
     switch (rawBlock.type) {
       case "declaration":
@@ -77,12 +83,14 @@ export default class Program {
     }
   }
 
+  //Get Created Sprite to update attributes
   getSprite(spriteName, spriteSource) {
     if (spriteSource === "userBlock") return this.createdSprites.get(spriteName);
     if (spriteSource === "gameBlock") return this.gameObjects.get(spriteName);
     return undefined;
   }
 
+  //Compile Blocks and validate dependencies
   compileBlocks() {
     for (const rawBlock of this.blocks) {
       if (!Object.hasOwn(this.executableBlock, rawBlock.belong)) {
@@ -99,6 +107,7 @@ export default class Program {
     return this.errors.size === 0;
   }
 
+  //Run setup code
   setup() {
     if (this.errors.size > 0) return false;
 
@@ -109,6 +118,7 @@ export default class Program {
     return true;
   }
 
+  //Run update code
   update() {
     for (const code of this.executableBlock.update) {
       code.execute(this);
@@ -121,6 +131,7 @@ export default class Program {
     }
   }
 
+  //Reset everthing before running the program again
   reset() {
     this.errors.clear();
     this.variables.clear();

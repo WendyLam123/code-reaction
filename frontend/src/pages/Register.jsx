@@ -16,7 +16,7 @@ const Register = () => {
     //update state when input changes
     const handleChange = (e) => {
         const {name, value} = e.target;
-        setValues({...prevousValues, [name]: value});
+        setValues({...values, [name]: value});
     };
 
     const handleSubmit = async (e) => {

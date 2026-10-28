@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../../contexts/AuthContext";
+import { API_URL } from "../../../api";
 
 function Input({page}){
     const [quizInput, setQuizInput] = useState("");
@@ -15,8 +16,10 @@ function Input({page}){
 
     async function checkInputAnswer(){
         const correctAnswer = page.quiz.answers[0].answer;
-        const userAnswer = quizInput.trim().toLowerCase();
-        const isCorrect = userAnswer === correctAnswer.trim().toLowerCase();
+        //remove all space of input 
+        //Todo: update database input answer
+        const userAnswer = quizInput.trim().toLowerCase().replace(/\s+/g, "");
+        const isCorrect = userAnswer === correctAnswer.trim().toLowerCase().replace(/\s+/g, "");
 
         setCompletedQuiz(isCorrect);
 
@@ -31,7 +34,7 @@ function Input({page}){
 
         try{
             //every attempt +1
-            const attempt = await fetch(`/api/courses/${page.id}/tryQuiz`, {
+            const attempt = await fetch(`${API_URL}/api/courses/${page.id}/tryQuiz`, {
                 method: "POST", 
                 headers: {Authorization: `Bearer ${token}`}
             })
@@ -47,7 +50,7 @@ function Input({page}){
 
             //it answer is correct
             if (isCorrect){
-                const updateCompleted = await fetch(`/api/courses/${page.id}/completedQuiz`, {
+                const updateCompleted = await fetch(`${API_URL}/api/courses/${page.id}/completedQuiz`, {
                     method: "POST", 
                     headers: {Authorization: `Bearer ${token}`}
                 })

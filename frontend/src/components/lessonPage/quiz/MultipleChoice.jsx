@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../../contexts/AuthContext";
+import { API_URL } from "../../../api";
 
 function MultipleChoice({page}){
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ function MultipleChoice({page}){
         }
         //update attempt and if the question is complete in database
         try{
-            const updateAttempt = await fetch(`/api/courses/${page.id}/tryQuiz`, {
+            const updateAttempt = await fetch(`${API_URL}/api/courses/${page.id}/tryQuiz`, {
                 method: "POST",
                 headers: {Authorization: `Bearer ${token}`}
                 });
@@ -40,7 +41,7 @@ function MultipleChoice({page}){
             if (answer.is_correct){
                 setCompleted(true);
 
-                const updateCompleted = await fetch(`/api/courses/${page.id}/completedQuiz`, {
+                const updateCompleted = await fetch(`${API_URL}/api/courses/${page.id}/completedQuiz`, {
                 method: "POST",
                 headers: {Authorization: `Bearer ${token}`}
             });

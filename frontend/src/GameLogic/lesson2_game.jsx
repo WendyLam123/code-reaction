@@ -122,7 +122,6 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
       let arrowCollider;
       let stairCollider;
       let doorOpened = false;
-      let wasTouchingCrate = false;
 
       // Matter sprites are created through the factory passed to Program below.
       p.preload = () => {
@@ -286,17 +285,9 @@ export default function AlienRescue({ CODE_BLOCKS, setErrors, setWin, reset }) {
 
         const block = program.createdSprites.get("block");
         if (block) {
-          const touchingCrate = bodiesAreColliding(block, crateCollider);
-          const bouncedFromCrate = touchingCrate && !wasTouchingCrate;
-          if (bouncedFromCrate) {
-            // Give the player a right-and-up impulse to reach the doorway.
-            setBodyVelocity(block, 4, -5);
-          }
-          wasTouchingCrate = touchingCrate;
 
           // Stair and arrow contacts apply the same slide velocity.
           if (
-            !bouncedFromCrate &&
             (bodiesAreColliding(block, stairCollider) ||
               bodiesAreColliding(block, arrowCollider) ||
               bodiesAreColliding(block, doorwayCollider))

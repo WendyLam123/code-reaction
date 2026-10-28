@@ -1,8 +1,9 @@
 function Lesson({page}){
+
     return (
-        <div 
+            <div
                 dangerouslySetInnerHTML={{__html: page.content}}
-            />
+              />
     )
 }
 

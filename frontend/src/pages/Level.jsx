@@ -5,15 +5,10 @@ import "../styles/Level.css";
 import Nav from "../components/Nav";
 import Game from "../components/lessonPage/game/Game";
 import Quiz from "../components/lessonPage/quiz/Quiz";
-import MiniGame from "../components/lessonPage/miniGame/MiniGame";
-import Variable_3 from "../components/lessonPage/miniGame/variable_3";
-import Variable_10 from "../components/lessonPage/miniGame/variable_10";
-import { API_URL } from "../api";
+import Lesson from "../components/lessonPage/Lesson"
+import Activity from "../components/lessonPage/activity/Activity"
 
-const miniGameTable = {
-  "2-3": Variable_3,
-  "2-10": Variable_10,
-};
+import { API_URL } from "../api";
 
 function Level() {
   const { courseId, pageOrder } = useParams();
@@ -23,9 +18,6 @@ function Level() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const gameKey = `${courseId}-${pageOrder}`;
-  const miniGame = miniGameTable[gameKey];
 
   //manage next/previous page within course
   const currentOrder = Number(pageOrder);
@@ -137,18 +129,9 @@ function Level() {
         </div>
 
         <div className="lessonMiddle">
-          {(currentPage.page_type === "lesson" ||
-            currentPage.page_type === "activity") && (
-            <>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: currentPage.content,
-                }}
-              />
+          {currentPage.page_type === "lesson"&& <Lesson page={currentPage} />}
 
-              {miniGame && <MiniGame />}
-            </>
-          )}
+          {currentPage.page_type === 'activity' && <Activity page={currentPage}/>}
 
           {currentPage.page_type === "quiz" && <Quiz page={currentPage} />}
         </div>

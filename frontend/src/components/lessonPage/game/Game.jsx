@@ -30,6 +30,7 @@ const codeBlocksFormatted = [
     id: 1,
     type: "declaration",
     belong: "global",
+    //let block;
     code: "let block;",
     order: 1,
     values: {
@@ -101,7 +102,61 @@ const codeBlocksFormatted = [
     WorkSpace: [],
   });
 
+  function updateBlockValues(blockId, placeToChange, value){
+    setItems((prev)=>{
+      return {
+        ...prev, 
+        WorkSpace: prev.WorkSpace.map((block)=>{
+          if (block.id !== blockId){
+            return block;
+          }
+
+          const updatedBlock = {
+            ...block,
+            values: {...block.values, [placeToChange]: value}
+          }
+          return updatedBlock;
+        })
+      }
+    })
+  }
+
+  function updateIfVelocity(blockId, actionIndex, axis, value) {
+  setItems((prev) => ({
+    ...prev,
+    WorkSpace: prev.WorkSpace.map((block) => {
+      if (block.id !== blockId) return block;
+
+      const actions = block.values.actions.map((action, index) => {
+        if (index !== actionIndex || action.type !== "set_velocity") {
+          return action;
+        }
+
+        return {
+          ...action,
+          values: {
+            ...action.values,
+            vel: {
+              ...action.values.vel,
+              [axis]: value,
+            },
+          },
+        };
+      });
+
+      return {
+        ...block,
+        values: {
+          ...block.values,
+          actions,
+        },
+      };
+    }),
+  }));
+}
+
   function submitCode() {
+    console.log(items["WorkSpace"])
     setSubmittedCode(items["WorkSpace"]);
     setErrors(new Map());
     setWin(false);
@@ -239,6 +294,9 @@ const codeBlocksFormatted = [
                       index={index}
                       column="WorkSpace"
                       content={item.code}
+                      item={item}
+                      updateBlockValues={updateBlockValues}
+                      updateIfVelocity={updateIfVelocity}
                     />
                   </div>
                 );
